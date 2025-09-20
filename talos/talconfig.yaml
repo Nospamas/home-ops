@@ -96,21 +96,20 @@ nodes:
     ipAddress: "192.168.0.4"
     installDisk: "/dev/sda"
     machineSpec:
-      secureboot: false
+      mode: nocloud
+      arch: amd64
+      useUKI: true
     talosImageURL: factory.talos.dev/installer/53d9c2e8fed48f189ed51170170ff89639eb52de2d5036b8f4588e9fe3813749
-    controlPlane: true
+    controlPlane: false
     networkInterfaces:
-      - deviceSelector:
-          hardwareAddr: "bc:24:11:be:68:ec"
-        dhcp: false
+      - interface: eth0
         addresses:
-          - "192.168.0.4/24"
+          - 192.168.0.4/16
         routes:
-          - network: "0.0.0.0/0"
-            gateway: "192.168.11.1"
+          - network: 0.0.0.0/0
+            gateway: 192.168.11.1
+            metric: 1024
         mtu: 1500
-        vip:
-          ip: "192.168.0.254"
     extensionServices:
       - name: tailscale
         environment:
