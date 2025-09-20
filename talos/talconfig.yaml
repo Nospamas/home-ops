@@ -40,6 +40,10 @@ nodes:
         mtu: 1500
         vip:
           ip: "192.168.0.254"
+    extensionServices:
+      - name: tailscale
+        environment:
+          - TS_AUTHKEY=${tsAuthCtrl01}
   - hostname: "ctrl-02"
     ipAddress: "192.168.0.2"
     installDiskSelector:
@@ -60,6 +64,10 @@ nodes:
         mtu: 1500
         vip:
           ip: "192.168.0.254"
+    extensionServices:
+      - name: tailscale
+        environment:
+          - TS_AUTHKEY=${tsAuthCtrl02}
   - hostname: "ctrl-03"
     ipAddress: "192.168.0.3"
     installDiskSelector:
@@ -80,6 +88,10 @@ nodes:
         mtu: 1500
         vip:
           ip: "192.168.0.254"
+    extensionServices:
+      - name: tailscale
+        environment:
+          - TS_AUTHKEY=${tsAuthCtrl03}
   - hostname: "work-01"
     ipAddress: "192.168.0.4"
     installDisk: "/dev/sda"
@@ -99,6 +111,10 @@ nodes:
         mtu: 1500
         vip:
           ip: "192.168.0.254"
+    extensionServices:
+      - name: tailscale
+        environment:
+          - TS_AUTHKEY=${tsAuthWork01}
 
 # Global patches
 patches:

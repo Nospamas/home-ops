@@ -1,0 +1,23 @@
+tsAuthCtrl01: ENC[AES256_GCM,data:rgii7vC3wN53ulwPb/+zsHUAvPrFTyvHBMdHZJ09Ijeq2uYwgf1Mutx97biI+jnrRmqNYzkwQOttTkBiNA==,iv:czRiOrWo7glnJEJMg9p1RzZFYxMTzPI29Aret/bu5XU=,tag:M4245ZxE9FTuVXm6WWTsMA==,type:str]
+#ENC[AES256_GCM,data:b8CMSvK7VC80c/oIxg3WwaoXglLHQ/k=,iv:6IUrZETvk9c4MW+5n6L5CemI0R+12nB42cUZs4BLBy0=,tag:BQxKyyWxIDv2r6hFsGQL8A==,type:comment]
+tsAuthCtrl02: ENC[AES256_GCM,data:1omsX9ZRBK5uiURk9ERHBDPyY8frb9FywcYKgkvyqNxwjZwLQJzKEKGcXTG1Cci1uUpgU6CXohAWB0DZew==,iv:0zBeVgGL+QXxTQtrRci06YkGOp0ZDv8ZoYS/eOKURA0=,tag:q2gB7L94Q/H7BzZuQhn58Q==,type:str]
+#ENC[AES256_GCM,data:bEPllKr7BP3cMJ6f2kMJHfSuTJCb6Rfa,iv:WQOseE7gIxmis1c4kl7f8WQ8u+Hlh8Hws7ILbu2l88w=,tag:2ltvO1mBg3W/IiDOpvf9GA==,type:comment]
+tsAuthCtrl03: ENC[AES256_GCM,data:VR5jTtawWkFRZZX+40s9LcAhvxkRQW1A2440+PQqvh2Rydu14XOSYB1q3drQiu7morS7lTtaNkedPMFTSA==,iv:EiVmfXc6tNpXfRd8IbszIELamyMEDLjXI4GpqQ6bazA=,tag:q9rTLY6nPwqFRtSesrKMuQ==,type:str]
+#ENC[AES256_GCM,data:bxv1XooNRu0eikRs2zO221/iRYtxOofZ,iv:JMeOaEiIlCxsZDscBfOdWRVFjkhTZyWGs/S7Gv7GrEs=,tag:LZhCfQNbxe0F9yY5ju2Aqg==,type:comment]
+tsAuthWork01: ENC[AES256_GCM,data:6MUccgiXZ/5YQRzWWpjtJV8uv+XIqcaXkCki+O54llM+O4exeYjxjXk+gFmbfCuhn7jpqOyH86YVEOuAAqc=,iv:HW0dQ4kZFcMmRtFOBvS1IUueRojCaAJoTIIMr5wa2DM=,tag:Kr/XSRlaHpkMklKiSdwLDw==,type:str]
+sops:
+  age:
+    - recipient: age1sq0wjrxgd2p0kl55cl22306l3lyzt5n0hdmqny6tr9qfkwyxu3aszelc7a
+      enc: |
+        -----BEGIN AGE ENCRYPTED FILE-----
+        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBPU09USkJyUDRIbjAyVm1t
+        S0VVNFB1RXROdFRTcHJKVzlyY3VZZ0tLbVNzCmJCZVhwcndSczkvRmUwRnU3dGsr
+        ZCtmYWs4SThWS2JNWkRTb0NKWjlxV1kKLS0tIDJwZElzeEhxZ1grbzNvLzBTVjU5
+        VHh4QmFpdUR3WVNxNTJYK2NSUXpzeFEKdrlVBXYWmJLBVRaI7cVVsxTC6Ta+TBw6
+        u6jSATHVqTviz+/nV9konubjdVvpgBG5K4E4JI5AdMED07JKCwM6NQ==
+        -----END AGE ENCRYPTED FILE-----
+  lastmodified: "2025-09-20T08:20:48Z"
+  mac: ENC[AES256_GCM,data:Fwnn4YxVMpcoxMMWYKv9Qy/zCb3avDIz3YMxI+OUWGjEkgwT1OirKwBUf6UlG4/Vc8iXjSh+yrzL+N2cyubxd9M7Z6/KddKQnuLpTe7JiRGdt57j9Lx9dn/M6PikO40GvhGvGjgSYAm++TrwJEdRymGlDiPyozFHmlwpWSLAXi0=,iv:dTx1OfSA+dkVkPGaY8+1zwD3RMdnrKGqDSP9GAMi57o=,tag:MT1JD3x09mVg7gUs80+BhQ==,type:str]
+  unencrypted_suffix: _unencrypted
+  mac_only_encrypted: true
+  version: 3.10.2
