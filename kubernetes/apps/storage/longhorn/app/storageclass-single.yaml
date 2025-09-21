@@ -1,0 +1,11 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: longhorn-single
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+retentionPolicy: Retain
+parameters:
+  numberOfReplicas: "1"
+  diskSelector: "ultra-fast"
+  dataLocality: "strict-local"
