@@ -1,0 +1,20 @@
+# kubelet mounts for control-plane
+machine:
+  sysctls:
+    vm.nr_hugepages: "1024"
+  kubelet:
+    extraMounts:
+      - destination: /var/mnt/host-nvme/
+        type: bind
+        source: /var/mnt/host-nvme/
+        options:
+          - rbind
+          - rshared
+          - rw
+      - destination: /var/mnt/host-ssd/
+        type: bind
+        source: /var/mnt/host-ssd/
+        options:
+          - rbind
+          - rshared
+          - rw

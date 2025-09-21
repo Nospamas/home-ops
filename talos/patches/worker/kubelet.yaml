@@ -1,0 +1,11 @@
+#kubelet worker mounts
+machine:
+  kubelet:
+    extraMounts:
+      - destination: /var/mnt/host-nvme/
+        type: bind
+        source: /var/mnt/host-nvme/
+        options:
+          - rbind
+          - rshared
+          - rw

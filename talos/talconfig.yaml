@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/budimanjojo/talhelper/master/pkg/config/schemas/talconfig.json
 ---
-clusterName: kubernetes
+clusterName: &clusterName kubernetes
 
 talosVersion: "${talosVersion}"
 kubernetesVersion: "${kubernetesVersion}"
@@ -8,7 +8,7 @@ kubernetesVersion: "${kubernetesVersion}"
 endpoint: https://192.168.0.254:6443
 additionalApiServerCertSans: &sans
   - "127.0.0.1"
-  - "192.168.0.254"
+  - &talosControlplaneVip 192.168.0.254
   - "k8s.cansk.net"
 additionalMachineCertSans: *sans
 
@@ -26,24 +26,50 @@ nodes:
       serial: "23253E802750"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/installer/65cf8364cd0de4cf7b851dc7067a2db83d0ba04f11d8635c6cd3334be6ffb825
     controlPlane: true
     networkInterfaces:
-      - deviceSelector:
-          hardwareAddr: "00:e0:4c:68:03:fe"
-        dhcp: false
+      - interface: eno1
         addresses:
-          - "192.168.0.1/24"
+          - 192.168.0.1/16
         routes:
-          - network: "0.0.0.0/0"
-            gateway: "192.168.11.1"
-        mtu: 1500
+          - network: 0.0.0.0/0
+            gateway: 192.168.11.1
+            metric: 1024
         vip:
-          ip: "192.168.0.254"
+          ip: *talosControlplaneVip
     extensionServices:
       - name: tailscale
         environment:
           - TS_AUTHKEY=${tsAuthCtrl01}
+    userVolumes: &defaultUserVolumes
+      - name: host-nvme
+        provisioning:
+          diskSelector:
+            match: (disk.transport == 'nvme' || disk.transport == 'virtio') && system_disk
+          minSize: 100Gi
+          grow: true
+    nodeLabels:
+      longhorn-manager: "manager"
+      longhorn-driver: "driver"
+      longhorn-ui: "ui"
+      node.longhorn.io/create-default-disk: 'config'
+    nodeAnnotations:
+      node.longhorn.io/default-disks-config:  &longhorn-node-config
+        '[{
+            "name":"longhorn-nvme",
+            "path":"/var/mnt/host-nvme/",
+            "storageReserved":0,
+            "tags": ["ultra-fast", "ssd"],
+            "allowScheduling":true
+          },
+          {
+            "name":"longhorn-ssd",
+            "path":"/var/mnt/host-ssd/",
+            "storageReserved":0,
+            "tags": ["fast", "ssd"],
+            "allowScheduling":true
+          }]'
+    nodeTaints: {}
   - hostname: "ctrl-02"
     ipAddress: "192.168.0.2"
     installDiskSelector:
@@ -53,21 +79,48 @@ nodes:
     talosImageURL: factory.talos.dev/installer/65cf8364cd0de4cf7b851dc7067a2db83d0ba04f11d8635c6cd3334be6ffb825
     controlPlane: true
     networkInterfaces:
-      - deviceSelector:
-          hardwareAddr: "00:e0:4c:68:07:ba"
-        dhcp: false
+      - interface: eno1
         addresses:
-          - "192.168.0.2/24"
+          - 192.168.0.2/16
         routes:
-          - network: "0.0.0.0/0"
-            gateway: "192.168.11.1"
-        mtu: 1500
+          - network: 0.0.0.0/0
+            gateway: 192.168.11.1
+            metric: 1024
         vip:
-          ip: "192.168.0.254"
+          ip: *talosControlplaneVip
     extensionServices:
       - name: tailscale
         environment:
           - TS_AUTHKEY=${tsAuthCtrl02}
+    userVolumes: &defaultUserVolumes
+      - name: host-nvme
+        provisioning:
+          diskSelector:
+            match: (disk.transport == 'nvme' || disk.transport == 'virtio') && system_disk
+          minSize: 100Gi
+          grow: true
+    nodeLabels:
+      longhorn-manager: "manager"
+      longhorn-driver: "driver"
+      longhorn-ui: "ui"
+      node.longhorn.io/create-default-disk: 'config'
+    nodeAnnotations:
+      node.longhorn.io/default-disks-config:  &longhorn-node-config
+        '[{
+            "name":"longhorn-nvme",
+            "path":"/var/mnt/host-nvme/",
+            "storageReserved":0,
+            "tags": ["ultra-fast", "ssd"],
+            "allowScheduling":true
+          },
+          {
+            "name":"longhorn-ssd",
+            "path":"/var/mnt/host-ssd/",
+            "storageReserved":0,
+            "tags": ["fast", "ssd"],
+            "allowScheduling":true
+          }]'
+    nodeTaints: {}
   - hostname: "ctrl-03"
     ipAddress: "192.168.0.3"
     installDiskSelector:
@@ -77,22 +130,41 @@ nodes:
     talosImageURL: factory.talos.dev/installer/65cf8364cd0de4cf7b851dc7067a2db83d0ba04f11d8635c6cd3334be6ffb825
     controlPlane: true
     networkInterfaces:
-      - deviceSelector:
-          hardwareAddr: "00:e0:4c:68:08:d5"
-        dhcp: false
+      - interface: eno1
         addresses:
-          - "192.168.0.3/24"
+          - 192.168.0.3/16
         routes:
-          - network: "0.0.0.0/0"
-            gateway: "192.168.11.1"
-        mtu: 1500
+          - network: 0.0.0.0/0
+            gateway: 192.168.11.1
+            metric: 1024
         vip:
-          ip: "192.168.0.254"
+          ip: *talosControlplaneVip
     extensionServices:
       - name: tailscale
         environment:
           - TS_AUTHKEY=${tsAuthCtrl03}
+    userVolumes: *defaultUserVolumes
+    nodeLabels:
+      longhorn-manager: "manager"
+      longhorn-driver: "driver"
+      longhorn-ui: "ui"
+      node.longhorn.io/create-default-disk: 'config'
+    nodeAnnotations:
+      node.longhorn.io/default-disks-config: *longhorn-node-config
+    nodeTaints: {}
   - hostname: "work-01"
+    schematic:
+      customization:
+        systemExtensions:
+            officialExtensions:
+                - siderolabs/amd-ucode
+                - siderolabs/amdgpu
+                - siderolabs/i915
+                - siderolabs/intel-ucode
+                - siderolabs/qemu-guest-agent
+                - siderolabs/tailscale
+                - siderolabs/iscsi-tools
+                - siderolabs/util-linux-tools
     ipAddress: "192.168.0.4"
     installDisk: "/dev/sda"
     machineSpec:
@@ -114,6 +186,11 @@ nodes:
       - name: tailscale
         environment:
           - TS_AUTHKEY=${tsAuthWork01}
+    nodeLabels:
+      longhorn-driver: "driver"
+      longhorn-manager: "manager"
+    nodeAnnotations: {}
+    nodeTaints: {}
 
 # Global patches
 patches:
@@ -125,7 +202,31 @@ patches:
 
 # Controller patches
 controlPlane:
+  nodeLabels:
+    topology.kubernetes.io/region: *clusterName
+    topology.kubernetes.io/zone: m
+  schematic:
+    customization:
+      systemExtensions:
+          officialExtensions:
+              - siderolabs/amd-ucode
+              - siderolabs/amdgpu
+              - siderolabs/iscsi-tools
+              - siderolabs/tailscale
+              - siderolabs/util-linux-tools
   patches:
     - "@./patches/controller/admission-controller-patch.yaml"
     - "@./patches/controller/cluster.yaml"
+    - "@./patches/controller/kubelet.yaml"
+  extraManifests:
+  - "@./volumes/volume-ephemeral.yaml"
+  - "@./volumes/volume-ssd.yaml"
 
+worker:
+  nodeLabels:
+    topology.kubernetes.io/region: *clusterName
+    topology.kubernetes.io/zone: m
+  patches:
+    - "@./patches/worker/kubelet.yaml"
+  extraManifests:
+  - "@./volumes/volume-ephemeral.yaml"

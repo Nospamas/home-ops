@@ -1,0 +1,9 @@
+---
+apiVersion: v1alpha1
+kind: ExistingVolumeConfig
+name: host-ssd # Name of the volume.
+# The discovery describes how to find a volume.
+discovery:
+    # The volume selector expression.
+    volumeSelector:
+        match: disk.transport == 'sata' && volume.name == 'xfs'  # The Common Expression Language (CEL) expression to match the volume.
