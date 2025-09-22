@@ -1,0 +1,75 @@
+---
+# see https://github.com/tholinka/home-ops/blob/main/kubernetes/apps/network/pihole/app/resources/docker-compose.yaml
+# modified to run on truenas without swarm mode
+services:
+  dnscrypt-proxy:
+    user: 1000:1000
+    restart: always
+    image: ghcr.io/klutchell/dnscrypt-proxy:main
+    # ports:
+    #   - "5053:5053/tcp"
+    #   - "5053:5053/udp"
+    networks:
+      pihole:
+        ipv4_address: 172.20.2.253
+    volumes:
+      - /mnt/Storage/app-data/pihole/dnscrypt-config/dnscrypt-proxy.toml:/config/dnscrypt-proxy.toml
+  pihole:
+    depends_on:
+      - dnscrypt-proxy
+    restart: always
+    image: ghcr.io/pi-hole/pihole:latest
+    ports:
+      - target: 53
+        published: 53
+        protocol: tcp
+        mode: host
+      - target: 53
+        published: 53
+        protocol: udp
+        mode: host
+      - target: 8080
+        published: 8080
+        protocol: tcp
+        mode: host
+      - target: 4443
+        published: 4443
+        protocol: tcp
+        mode: host
+    networks:
+      - pihole
+    environment:
+      TZ: America/Vancouver
+      WEBPASSWORD_FILE: pihole-password
+      FTLCONF_dns_listeningMode: all
+      FTLCONF_dns_dnssec: 'false'
+      FTLCONF_dns_upstreams: 172.20.2.253;192.168.2.253
+      FTLCONF_webserver_interface_boxed: false
+      FTLCONF_webserver_interface_theme: default-auto
+      FTLCONF_webserver_port: 8080
+    healthcheck:
+      start_period: 5m
+    entrypoint:
+      - sh
+      - -c
+      - /config/update.sh && exec /usr/bin/start.sh
+      # slightly modified update.sh:
+      # - remove lines 8-11
+      # - insert in place of those lines:
+      #     echo;
+      #     echo "Prepping dnsmasq"
+      #     mkdir -p /etc/dnsmasq.d
+      #     curl https://raw.githubusercontent.com/nospamas/home-ops/refs/heads/main/kubernetes/apps/network/pihole/app/resources/02-custom.conf -o /etc/dnsmasq.d/02-custom.conf
+      #     curl https://raw.githubusercontent.com/nospamas/home-ops/refs/heads/main/kubernetes/apps/network/pihole/app/resources/03-hosts.conf -o /etc/dnsmasq.d/03-hosts.conf
+      # - replace coredns ip with 172.20.2.253
+    volumes: # comment to remove persistence
+      - /mnt/Storage/app-data/pihole/config:/etc/pihole
+      - /mnt/Storage/app-data/pihole/update.sh:/config/update.sh
+      - /mnt/Storage/app-data/pihole/pihole-password.txt:/run/secrets/pihole-password:ro
+
+
+networks:
+  pihole:
+    ipam:
+      config:
+        - subnet: 172.20.2.0/24

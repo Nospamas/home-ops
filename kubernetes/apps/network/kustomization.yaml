@@ -6,6 +6,10 @@ namespace: network
 components:
   - ../../components/common
 resources:
+  - ./dnscrypt-proxy/ks.yaml
+  - ./pihole/ks.yaml
+  - ./pihole-nebula-sync/ks.yaml
   - ./external-dns-cloudflare/ks.yaml
+  - ./external-dns-pihole/ks.yaml
   - ./cloudflare-tunnel/ks.yaml
   - ./k8s-gateway/ks.yaml

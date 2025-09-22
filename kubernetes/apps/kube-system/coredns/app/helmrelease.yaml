@@ -26,7 +26,7 @@ spec:
       create: true
     service:
       name: kube-dns
-      clusterIP: "10.43.0.10"
+      clusterIP: '10.43.0.10'
     replicaCount: 2
     servers:
       - zones:
@@ -38,17 +38,35 @@ spec:
           - name: errors
           - name: health
             configBlock: |-
-              lameduck 5s
+              lameduck 10s
           - name: ready
+          - name: rewrite
+            # don't spam pihole with envoy-gateway requests
+            parameters: name exact envoy-gateway envoy-gateway.cluster.local
           - name: kubernetes
             parameters: cluster.local in-addr.arpa ip6.arpa
             configBlock: |-
               pods verified
               fallthrough in-addr.arpa ip6.arpa
+              ttl 30
           - name: autopath
-            parameters: "@kubernetes"
+            parameters: '@kubernetes'
           - name: forward
-            parameters: . /etc/resolv.conf
+            parameters: internal. dns://192.168.2.254 dns://192.168.0.51 dns://192.168.11.1
+            configBlock: |-
+              policy sequential
+              health_check 5s
+          - name: forward
+            parameters: ${SECRET_DOMAIN}. dns://192.168.2.254 dns://192.168.0.51 dns://192.168.11.1
+            configBlock: |-
+              policy sequential
+              health_check 5s
+          - name: forward
+            parameters: . dns://192.168.2.254 dns://192.168.0.51 dns://192.168.11.1
+            configBlock: |-
+              tls_servername cloudflare-dns.com
+              policy sequential
+              health_check 5s
           - name: cache
             configBlock: |-
               prefetch 20
@@ -68,9 +86,35 @@ spec:
             - matchExpressions:
                 - key: node-role.kubernetes.io/control-plane
                   operator: Exists
+      podAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                      - pihole
+                      - dnscrypt-proxy
+              topologyKey: kubernetes.io/hostname
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                      - coredns
+              topologyKey: kubernetes.io/hostname
     tolerations:
       - key: CriticalAddonsOnly
         operator: Exists
       - key: node-role.kubernetes.io/control-plane
         operator: Exists
         effect: NoSchedule
+    deployment:
+      annotations:
+        reloader.stakater.com/auto: 'true'

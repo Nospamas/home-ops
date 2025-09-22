@@ -17,6 +17,16 @@ spec:
     remediation:
       retries: 3
   values:
+    # https://github.com/longhorn/longhorn/blob/v1.9.1/chart/values.yaml
+    longhornManager:
+      nodeSelector:
+        longhorn-manager: "manager"
+    longhornDriver:
+      nodeSelector:
+        longhorn-driver: "driver"
+    longhornUI:
+      nodeSelector:
+        longhorn-ui: "ui"
     monitoring:
       enabled: true
       createPrometheusRules: true

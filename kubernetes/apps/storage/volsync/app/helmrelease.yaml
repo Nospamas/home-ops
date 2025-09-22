@@ -32,5 +32,7 @@ spec:
       disableAuth: true
     podSecurityContext:
       runAsNonRoot: true
-      runAsUser: 1000
-      runAsGroup: 1000
+      runAsUser: 3002
+      runAsGroup: 3002
+      fsGroup: 3002
+      fsGroupChangePolicy: OnRootMismatch

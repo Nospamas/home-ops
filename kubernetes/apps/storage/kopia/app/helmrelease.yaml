@@ -29,10 +29,12 @@ spec:
             env:
               KOPIA_WEB_ENABLED: true
               KOPIA_WEB_PORT: &port 80
-              TZ: America/New_York
-            envFrom:
-              - secretRef:
-                  name: kopia-secret
+              TZ: America/Vancouver
+              KOPIA_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: kopia-secret
+                    key: KOPIA_PASSWORD
             args:
               - --without-password
             probes:
@@ -60,9 +62,9 @@ spec:
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+        runAsUser: 3002
+        runAsGroup: 3002
+        fsGroup: 3002
         fsGroupChangePolicy: OnRootMismatch
     service:
       app:

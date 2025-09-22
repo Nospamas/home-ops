@@ -1,0 +1,266 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app pihole
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  driftDetection:
+    mode: enabled
+  timeout: 30m
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    defaultPodOptions:
+      hostUsers: false
+
+    controllers:
+      *app :
+        type: statefulset
+        annotations:
+          reloader.stakater.com/auto: 'true'
+        replicas: 3
+        strategy: RollingUpdate
+        rollingUpdate:
+          unavailable: 1
+          surge: 1
+        pod:
+          annotations:
+            kubectl.kubernetes.io/default-container: pihole
+          affinity:
+            podAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  podAffinityTerm:
+                    labelSelector:
+                      matchExpressions:
+                        - key: app.kubernetes.io/name
+                          operator: In
+                          values:
+                            - dnscrypt-proxy
+                    topologyKey: kubernetes.io/hostname
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  podAffinityTerm:
+                    labelSelector:
+                      matchExpressions:
+                        - key: app.kubernetes.io/name
+                          operator: In
+                          values:
+                            - *app
+                    topologyKey: kubernetes.io/hostname
+          priorityClassName: system-cluster-critical
+          dnsPolicy: None
+          dnsConfig:
+            nameservers:
+              - 192.168.2.253
+            options:
+              - name: ndots
+                value: '1'
+        statefulset:
+          volumeClaimTemplates:
+            - name: config
+              storageClass: longhorn-ultra-fast
+              accessMode: ReadWriteOnce
+              size: 2Gi
+              advancedMounts:
+                init:
+                  - path: /final
+                *app :
+                  - path: /etc/pihole
+        initContainers:
+          init:
+            image:
+              repository: ghcr.io/pi-hole/pihole
+              tag: 2025.08.0@sha256:90a1412b3d3037d1c22131402bde19180d898255b584d685c84d943cf9c14821
+            command:
+              - 'bash'
+            args:
+              - '-e'
+              - /config/update.sh
+            securityContext:
+              allowPrivilegeEscalation: false
+            resources:
+              requests:
+                cpu: 200m
+              limits:
+                memory: 512Mi
+        containers:
+          *app :
+            image:
+              repository: ghcr.io/pi-hole/pihole
+              tag: 2025.08.0@sha256:90a1412b3d3037d1c22131402bde19180d898255b584d685c84d943cf9c14821
+            env:
+              FTLCONF_dns_listeningMode: all
+              FTLCONF_dns_dnssec: 'false'
+              FTLCONF_dns_upstreams: 192.168.2.253;192.168.2.253
+              FTLCONF_webserver_interface_boxed: false
+              FTLCONF_webserver_interface_theme: default-auto
+              FTLCONF_webserver_port: &pihole-port 80
+              FTLCONF_webserver_api_password: &pihole-password
+                valueFrom:
+                  secretKeyRef:
+                    name: pihole-admin
+                    key: password
+            probes:
+              liveness: &pihole-probes
+                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command:
+                      - /usr/bin/nslookup
+                      - pi.hole
+                      - '127.0.0.1'
+              startup: *pihole-probes
+              readiness: *pihole-probes
+            securityContext:
+              allowPrivilegeEscalation: false
+            resources:
+              requests:
+                cpu: 100m
+              limits:
+                # looking at the query log can spike the memory usage very high
+                memory: 512Mi
+          exporter: &exporter
+            image:
+              repository: ekofr/pihole-exporter
+              tag: v1.2.0
+            env: &exporterEnv
+              PIHOLE_HOSTNAME:
+                valueFrom:
+                  fieldRef:
+                    fieldPath: status.podIP
+              PIHOLE_PORT: *pihole-port
+              PIHOLE_PASSWORD: *pihole-password
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 32Mi
+            probes:
+              liveness: &exporter-probes
+                enabled: true
+                custom: true
+                spec:
+                  failureThreshold: 3
+                  initialDelaySeconds: 10
+                  periodSeconds: 20
+                  successThreshold: 1
+                  tcpSocket:
+                    port: &exporter-port 9617
+                  timeoutSeconds: 1
+              readiness: *exporter-probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFileSystem: true
+              capabilities: { drop: ['ALL'] }
+              runAsNonRoot: true
+              runAsUser: 1000
+              runAsGroup: 1000
+              fsGroup: 1000
+              fsGroupChangePolicy: OnRootMismatch
+
+      nas-exporter: # also setup exporter for nas' pihole instance
+        containers:
+          exporter:
+            <<: *exporter
+            env:
+              <<: *exporterEnv
+              PIHOLE_PORT: 8080
+              PIHOLE_HOSTNAME: 192.168.0.51
+
+    service:
+      *app :
+        controller: *app
+        type: LoadBalancer
+        annotations:
+          lbipam.cilium.io/ips: '192.168.2.254'
+        ports:
+          dns-udp:
+            port: 53
+            protocol: UDP
+          dns-tcp:
+            port: 53
+            protocol: TCP
+          http:
+            primary: true
+            port: *pihole-port
+            protocol: HTTP
+          https:
+            port: 443
+            protocol: HTTPS
+          prometheus:
+            port: *exporter-port
+            protocol: HTTP
+
+      nas-exporter:
+        controller: &nasExporter nas-exporter
+        ports:
+          prometheus:
+            port: *exporter-port
+            protocol: HTTP
+
+    route:
+      *app :
+        hostnames: ["{{ .Release.Name }}.${SECRET_DOMAIN}"]
+        parentRefs:
+          - name: internal
+            namespace: kube-system
+            sectionName: https
+        rules:
+          - backendRefs:
+            - identifier: *app
+            sessionPersistence:
+              sessionName: *app
+              type: Cookie
+              absoluteTimeout: 35m
+        # annotations:
+        #   gethomepage.dev/enabled: 'true'
+        #   gethomepage.dev/group: Infrastructure
+        #   gethomepage.dev/name: Pi-Hole
+        #   gethomepage.dev/icon: pi-hole.svg
+
+    serviceMonitor:
+      nas-exporter: &serviceMonitor
+        service:
+          identifier: *nasExporter
+        endpoints:
+          - port: prometheus # exporter-port's name
+            scheme: http
+            path: /metrics
+            interval: 1m
+            scrapeTimeout: 10s
+      app:
+        <<: *serviceMonitor
+        forceRename: *app
+        service:
+          identifier: *app
+
+    persistence:
+      config-map:
+        type: configMap
+        name: pihole-configmap
+        advancedMounts:
+          *app :
+            init:
+              - path: /config/update.sh
+                subPath: update.sh
+                readOnly: true
+            *app :
+              - path: /etc/dnsmasq.d/02-custom.conf
+                subPath: 02-custom.conf
+                readOnly: true
+              - path: /etc/dnsmasq.d/03-hosts.conf
+                subPath: 03-hosts.conf
+                readOnly: true
