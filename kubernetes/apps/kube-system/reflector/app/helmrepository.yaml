@@ -1,0 +1,10 @@
+
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: emberstack
+spec:
+  interval: 24h
+  url: https://emberstack.github.io/helm-charts/
+  timeout: 3m
