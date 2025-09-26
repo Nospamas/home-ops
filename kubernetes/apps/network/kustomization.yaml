@@ -12,4 +12,4 @@ resources:
   - ./external-dns-cloudflare/ks.yaml
   - ./external-dns-pihole/ks.yaml
   - ./cloudflare-tunnel/ks.yaml
-  - ./k8s-gateway/ks.yaml
+  - ./envoy-gateway/ks.yaml
