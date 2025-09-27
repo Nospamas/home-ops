@@ -185,7 +185,7 @@ spec:
         controller: *app
         type: LoadBalancer
         annotations:
-          lbipam.cilium.io/ips: '192.168.2.254'
+          lbipam.cilium.io/ips: 192.168.2.254
         ports:
           dns-udp:
             port: 53

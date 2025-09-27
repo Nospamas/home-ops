@@ -1,0 +1,157 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app plex
+  namespace: plex-media-server
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  driftDetection:
+    mode: enabled
+    ignore:
+      - paths: [/spec/replicas]
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  dependsOn:
+    - name: node-feature-discovery
+      namespace: system
+  values:
+    controllers:
+      plex:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/home-operations/plex
+              tag: 1.42.2.10156@sha256:9ad8a3506e1d8ebda873a668603c1a2c10e6887969564561be669efd65ae8871
+            env:
+              TZ: "America/Vancouver"
+              PLEX_ADVERTISE_URL: https://{{ .Release.Name }}.${SECRET_DOMAIN},http://192.168.2.202:32400,http://plex.media.svc.cluster.local:32400
+              PLEX_CLAIM_TOKEN:
+                valueFrom:
+                  secretKeyRef:
+                    name: plex-secret
+                    key: PLEX_CLAIM_TOKEN
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /identity
+                    port: &port 32400
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: {drop: ["ALL"]}
+            resources:
+              requests:
+                cpu: 100m
+              limits:
+                gpu.intel.com/i915: 1
+                memory: 8Gi
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 3001
+        runAsGroup: 3001
+        fsGroup: 3001
+        fsGroupChangePolicy: OnRootMismatch
+        supplementalGroups: [44, 10000]
+        seccompProfile: {type: RuntimeDefault}
+      nodeSelector:
+        intel.feature.node.kubernetes.io/gpu: "true"
+        # kubernetes.io/hostname: "ctrl-00"
+    service:
+      app:
+        controller: plex
+        type: LoadBalancer
+        annotations:
+          lbipam.cilium.io/ips: 192.168.2.202
+        ports:
+          http:
+            port: *port
+
+    route:
+      app:
+        hostnames:
+          - "{{ .Release.Name }}.${SECRET_DOMAIN}"
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: *port
+            filters:
+              - type: RequestHeaderModifier
+                requestHeaderModifier:
+                  remove:
+                    - "Range"
+            matches:
+              - path:
+                  type: PathPrefix
+                  value: /library/streams
+            timeouts:
+              request: 0s
+              backendRequest: 0s
+          - backendRefs:
+              - identifier: app
+                port: *port
+            timeouts:
+              request: 0s
+              backendRequest: 0s
+    persistence:
+      config:
+        existingClaim: plex
+        globalMounts:
+          - path: /config/Library/Application Support/Plex Media Server
+      cache:
+        existingClaim: plex-cache
+        globalMounts:
+          - path: /config/Library/Application Support/Plex Media Server/Cache
+      logs:
+        type: emptyDir
+        globalMounts:
+          - path: /config/Library/Application Support/Plex Media Server/Logs
+      tmp:
+        type: emptyDir
+      transcode:
+        type: emptyDir
+      movies:
+        type: nfs
+        server: 192.168.0.51
+        path: /mnt/Storage/movies
+        globalMounts:
+          - path: /media/movies
+      tv:
+        type: nfs
+        server: 192.168.0.51
+        path: /mnt/Storage/tv
+        globalMounts:
+          - path: /media/tv
+      music:
+        type: nfs
+        server: 192.168.0.51
+        path: /mnt/Storage/music
+        globalMounts:
+          - path: /media/music

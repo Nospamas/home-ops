@@ -9,13 +9,15 @@ spec:
   chartRef:
     kind: OCIRepository
     name: openebs
+  driftDetection:
+    mode: enabled
   install:
-    disableHooks: true
+    disableHooks: true # fails with oci
     remediation:
       retries: -1
   upgrade:
+    disableHooks: true # fails with oci
     cleanupOnFail: true
-    disableHooks: true
     remediation:
       retries: 3
   values:
@@ -41,7 +43,6 @@ spec:
     #         enabled: false
     #   etcd:
     #     # -- Kubernetes Cluster Domain
-    #     clusterDomain: cansk.local
     #     localpvScConfig:
     #       basePath: "/var/local/openebs"
     #   loki-stack:

@@ -15,5 +15,7 @@
     "yaml.schemas": {
         "kubernetes": "./kubernetes/**/*.yaml"
     },
-    "sops.enabled": false
+    "sops.enabled": true,
+    "sops.creationEnabled": false,
+    "sops.defaults.ignoreMac": false
 }

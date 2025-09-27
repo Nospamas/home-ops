@@ -172,6 +172,7 @@ nodes:
       - name: tailscale
         environment:
           - TS_AUTHKEY=${tsAuthWork01}
+    userVolumes: *defaultUserVolumes
     nodeLabels:
       longhorn-driver: "driver"
       longhorn-manager: "manager"
