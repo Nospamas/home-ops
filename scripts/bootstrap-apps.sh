@@ -110,6 +110,32 @@ function apply_crds() {
     log info "CRDs applied successfully"
 }
 
+# Default resources to be applied before the helmfile charts are installed
+function apply_default_resources() {
+    log debug "Applying default resources"
+
+    local -r resources_dir="${ROOT_DIR}/bootstrap/resources"
+
+    if [[ ! -d "${resources_dir}" ]]; then
+        log error "Directory does not exist" "directory=${resources_dir}"
+    fi
+
+    for resource in "${resources_dir}"/*.yaml; do
+        # Check if the resource is up-to-date
+        if kubectl diff --filename "${resource}" &>/dev/null; then
+            log info "Resource is up-to-date" "resource=$(basename "${resource}")"
+            continue
+        fi
+
+        # Apply the resource
+        if kubectl apply --server-side --filename "${resource}" &>/dev/null; then
+            log info "Resource applied successfully" "resource=$(basename "${resource}")"
+        else
+            log error "Failed to apply resource" "resource=$(basename "${resource}")"
+        fi
+    done
+}
+
 # Sync Helm releases
 function sync_helm_releases() {
     log debug "Syncing Helm releases"
@@ -136,6 +162,7 @@ function main() {
     apply_namespaces
     apply_sops_secrets
     apply_crds
+    apply_default_resources
     sync_helm_releases
 
     log info "Congrats! The cluster is bootstrapped and Flux is syncing the Git repository"

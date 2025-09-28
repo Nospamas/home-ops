@@ -1,0 +1,23 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: virtualization
+components:
+  - ../../components/common
+resources:
+  - ./cdi/ks.yaml
+  - ./kubevirt/ks.yaml
+  - ./ubuntu-dev/ks.yaml
+patches:
+  # privileged on namespace
+  - patch: |-
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: virtualization
+        labels:
+          kubevirt.io: ""
+          pod-security.kubernetes.io/enforce: "privileged"
+    target:
+      kind: Namespace

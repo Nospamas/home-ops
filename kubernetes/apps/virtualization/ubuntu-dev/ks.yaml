@@ -3,9 +3,16 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app spegel
-  namespace: &namespace system
+  name: &app ubuntu-dev
+  namespace: &namespace virtualization
+  annotations:
+    kustomize.toolkit.fluxcd.io/skip-cluster-secrets: "true"
 spec:
+  dependsOn:
+    - name: kubevirt
+    - name: cdi
+    - name: multus
+      namespace: network
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
@@ -14,10 +21,20 @@ spec:
     secretRef:
       name: sops-age
   interval: 1h
-  path: ./kubernetes/apps/system/spegel/app
+  path: ./kubernetes/apps/virtualization/ubuntu-dev/app
+  components:
+    - ../../../../components/volsync
   postBuild:
+    substitute:
+      APP: *app
+      VOLSYNC_CAPACITY: 50Gi
+      VOLSYNC_ACCESSMODES: ReadWriteMany
+      VOLSYNC_SCHEDULE: "0 0/12 * * *"
+      VOLSYNC_HOURLY: "4"
     substituteFrom:
       - name: cluster-secrets
+        kind: Secret
+      - name: ubuntu-dev-credentials
         kind: Secret
   prune: true
   retryInterval: 2m

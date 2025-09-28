@@ -1,0 +1,16 @@
+---
+apiVersion: cdi.kubevirt.io/v1beta1
+kind: DataVolume
+metadata:
+  name: ubuntu-24-04-desktop
+spec:
+  source:
+    http:
+      url: "https://releases.ubuntu.com/24.04.3/ubuntu-24.04.3-desktop-amd64.iso"
+  storage:
+    accessModes:
+      - ReadWriteMany
+    resources:
+      requests:
+        storage: 10Gi
+    storageClassName: longhorn-fast

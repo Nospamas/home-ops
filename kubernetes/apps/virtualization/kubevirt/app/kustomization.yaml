@@ -1,0 +1,21 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- ./operator.yaml
+patches:
+  # watch this namespace
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: virt-operator
+      spec:
+        template:
+          metadata:
+            labels:
+              app.kubernetes.io/created-by: kubevirt-operator
+    target:
+      kind: Deployment
+      name: virt-operator

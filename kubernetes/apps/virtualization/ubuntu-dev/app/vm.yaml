@@ -1,0 +1,67 @@
+---
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: ubuntu-dev
+spec:
+  runStrategy: RerunOnFailure
+  template:
+    metadata:
+      labels:
+        kubevirt.io/vm: ubuntu-dev
+      annotations:
+        kubevirt.io/allow-pod-bridge-network-live-migration: "true"
+    spec:
+      evictionStrategy: LiveMigrateIfPossible
+      domain:
+        cpu:
+          cores: 4
+        resources:
+          requests:
+            memory: 8G
+        devices:
+          disks:
+            - name: ubuntu-dev
+              disk:
+                bus: virtio
+            # - name: ubuntu-os
+            #   disk:
+            #     bus: virtio
+            - name: cloudinitdisk
+              disk:
+                bus: virtio
+          interfaces:
+          - name: default
+            masquerade: {}
+      accessCredentials:
+        - userPassword:
+            source:
+              secret:
+                secretName: ubuntu-dev-credentials
+            propagationMethod:
+              qemuGuestAgent: {}
+      networks:
+        - name: default
+          pod: {}
+      volumes:
+        - name: ubuntu-dev
+          persistentVolumeClaim:
+            claimName: ubuntu-dev
+        # - name: ubuntu-os
+        #   dataVolume:
+        #     name: ubuntu-24-04-desktop
+        - name: cloudinitdisk
+          cloudInitNoCloud:
+            userData: |
+              #cloud-config
+              users:
+                - name: nospamas
+                  groups: [sudo]
+                  shell: /bin/bash
+                  sudo: "ALL=(ALL) NOPASSWD:ALL"
+                  lock_passwd: false
+                  ssh_import_id:
+                    - gh:Nospamas
+              ssh_pwauth: true
+              packages:
+                - qemu-guest-agent

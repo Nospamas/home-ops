@@ -3,9 +3,13 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app spegel
-  namespace: &namespace system
+  name: &app cdi
+  namespace: &namespace virtualization
 spec:
+  dependsOn:
+    - name: kubevirt
+    - name: cert-manager
+      namespace: cert-manager
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
@@ -14,7 +18,7 @@ spec:
     secretRef:
       name: sops-age
   interval: 1h
-  path: ./kubernetes/apps/system/spegel/app
+  path: ./kubernetes/apps/virtualization/cdi/app
   postBuild:
     substituteFrom:
       - name: cluster-secrets
