@@ -20,6 +20,10 @@ spec:
     port: 5900
     protocol: TCP
     targetPort: 5900
+  - name: rdp
+    port: 3389
+    protocol: TCP
+    targetPort: 3389
   selector:
     kubevirt.io/vm: ubuntu-dev
   type: LoadBalancer
