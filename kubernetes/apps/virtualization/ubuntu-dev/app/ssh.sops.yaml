@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ubuntu-dev-ssh
+type: Opaque
+stringData:
+  key1: ENC[AES256_GCM,data:0z2UJuvsMtEQq0vC2c1/fWrEzTp7kHue45QPMdRDemE0TNekzOOYcfCn73UEw22SeCNl3COXruI91C57oxpZmnu73mBHrgm8c6kvfuKk6Cs=,iv:XJoYh+eSLLf/pa5mVqIiInKmxdLp9W2HfBylSzIKsNU=,tag:yqBMaUW8ilQebYWfhm8zAQ==,type:str]
+sops:
+  age:
+    - recipient: age1sq0wjrxgd2p0kl55cl22306l3lyzt5n0hdmqny6tr9qfkwyxu3aszelc7a
+      enc: |
+        -----BEGIN AGE ENCRYPTED FILE-----
+        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSAzS3p2akwrQWREMFJYMVc4
+        LzhjSHp3eXVOSHdoSkRlaUcrRUptL0xPblFFCnZYekZRQXJ5QWV0VzBkcTV1V0M5
+        OFZoQzhUVlpJb1diUmU5eEhaRVRCOFkKLS0tIHhWWm52aS9hQkkwVHNzVU54aTdO
+        QVNuVVZsQ0x5Y0RWWjE1SUdQS2o2R3cKTUls0x+UtPj9F7bDNvAcwjxo5rKbDvKk
+        9YdWs+AoZdzw2gD2RX5PlrK/fYgMeYD2PdPM83UPz2stIOl6lDXrJQ==
+        -----END AGE ENCRYPTED FILE-----
+  lastmodified: "2025-10-03T06:08:06Z"
+  mac: ENC[AES256_GCM,data:EV8fx9VHU+trQ0X5z7+0kX6iMF0xFGtj527pP+7vCBFm9PZeXAhTJ6192jUH51W+RO+KhxgasF9qNvGtiK1pkDY+3atD2Whz32RkS295B//sfkU3nYXTDdJgEvX348LoUFWG1SMJ3xq+eEh+ISrKLezGOjAQb9FB1R+LmNnBr48=,iv:wZTttWO1R9CTkoX9KxYFdc5X37E2yTO5f7DkGOPbJt8=,tag:egzwDahFPf7XaqNkm/SJVQ==,type:str]
+  encrypted_regex: ^(data|stringData)$
+  mac_only_encrypted: true
+  version: 3.10.2

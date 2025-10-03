@@ -26,6 +26,14 @@ nodes:
       serial: "23253E802750"
     machineSpec:
       secureboot: false
+    schematic: &schematic
+      customization:
+        systemExtensions:
+            officialExtensions:
+                - siderolabs/amd-ucode
+                - siderolabs/amdgpu
+                - siderolabs/iscsi-tools
+                - siderolabs/util-linux-tools
     controlPlane: true
     networkInterfaces:
       - interface: eno1
@@ -76,6 +84,7 @@ nodes:
       serial: "2325E6E6D78C"
     machineSpec:
       secureboot: false
+    schematic: *schematic
     talosImageURL: factory.talos.dev/installer/65cf8364cd0de4cf7b851dc7067a2db83d0ba04f11d8635c6cd3334be6ffb825
     controlPlane: true
     networkInterfaces:
@@ -113,7 +122,7 @@ nodes:
       serial: "7QH009VY"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/installer/65cf8364cd0de4cf7b851dc7067a2db83d0ba04f11d8635c6cd3334be6ffb825
+    schematic: *schematic
     controlPlane: true
     networkInterfaces:
       - interface: eno1
@@ -148,7 +157,6 @@ nodes:
                 - siderolabs/i915
                 - siderolabs/intel-ucode
                 - siderolabs/qemu-guest-agent
-                - siderolabs/tailscale
                 - siderolabs/iscsi-tools
                 - siderolabs/util-linux-tools
     ipAddress: "192.168.0.4"
@@ -157,7 +165,6 @@ nodes:
       mode: nocloud
       arch: amd64
       useUKI: true
-    talosImageURL: factory.talos.dev/installer/53d9c2e8fed48f189ed51170170ff89639eb52de2d5036b8f4588e9fe3813749
     controlPlane: false
     networkInterfaces:
       - interface: eth0
@@ -192,15 +199,6 @@ controlPlane:
   nodeLabels:
     topology.kubernetes.io/region: *clusterName
     topology.kubernetes.io/zone: m
-  schematic:
-    customization:
-      systemExtensions:
-          officialExtensions:
-              - siderolabs/amd-ucode
-              - siderolabs/amdgpu
-              - siderolabs/iscsi-tools
-              - siderolabs/tailscale
-              - siderolabs/util-linux-tools
   patches:
     - "@./patches/controller/admission-controller-patch.yaml"
     - "@./patches/controller/cluster.yaml"

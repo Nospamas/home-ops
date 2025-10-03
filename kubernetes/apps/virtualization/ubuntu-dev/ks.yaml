@@ -5,8 +5,6 @@ kind: Kustomization
 metadata:
   name: &app ubuntu-dev
   namespace: &namespace virtualization
-  annotations:
-    kustomize.toolkit.fluxcd.io/skip-cluster-secrets: "true"
 spec:
   dependsOn:
     - name: kubevirt
@@ -31,11 +29,6 @@ spec:
       VOLSYNC_ACCESSMODES: ReadWriteMany
       VOLSYNC_SCHEDULE: "0 0/12 * * *"
       VOLSYNC_HOURLY: "4"
-    substituteFrom:
-      - name: cluster-secrets
-        kind: Secret
-      - name: ubuntu-dev-credentials
-        kind: Secret
   prune: true
   retryInterval: 2m
   sourceRef:

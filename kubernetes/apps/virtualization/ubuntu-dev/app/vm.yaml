@@ -27,9 +27,6 @@ spec:
             # - name: ubuntu-os
             #   disk:
             #     bus: virtio
-            - name: cloudinitdisk
-              disk:
-                bus: virtio
           interfaces:
           - name: default
             masquerade: {}
@@ -40,6 +37,14 @@ spec:
                 secretName: ubuntu-dev-credentials
             propagationMethod:
               qemuGuestAgent: {}
+        - sshPublicKey:
+            source:
+              secret:
+                secretName: ubuntu-dev-ssh
+            propagationMethod:
+              qemuGuestAgent:
+                users:
+                  - nospamas
       networks:
         - name: default
           pod: {}
@@ -50,18 +55,3 @@ spec:
         # - name: ubuntu-os
         #   dataVolume:
         #     name: ubuntu-24-04-desktop
-        - name: cloudinitdisk
-          cloudInitNoCloud:
-            userData: |
-              #cloud-config
-              users:
-                - name: nospamas
-                  groups: [sudo]
-                  shell: /bin/bash
-                  sudo: "ALL=(ALL) NOPASSWD:ALL"
-                  lock_passwd: false
-                  ssh_import_id:
-                    - gh:Nospamas
-              ssh_pwauth: true
-              packages:
-                - qemu-guest-agent
