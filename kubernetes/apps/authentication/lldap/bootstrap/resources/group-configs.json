@@ -1,0 +1,13 @@
+
+{
+    "name": "admin",
+    "display_name": "Admin Users"
+}
+{
+    "name": "backup",
+    "display_name": "Backup Users"
+}
+{
+    "name": "media",
+    "display_name": "Media Users"
+}

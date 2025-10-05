@@ -1,0 +1,15 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./job.yaml
+configMapGenerator:
+  - name: lldap-configmap
+    files:
+      - user-schema.json=./resources/user-schema.json
+      - user-configs.json=./resources/user-configs.json
+      - group-schema.json=./resources/group-schema.json
+      - group-configs.json=./resources/group-configs.json
+generatorOptions:
+  disableNameSuffixHash: true
