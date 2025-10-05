@@ -1,0 +1,41 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/cert-manager.io/certificate_v1.json
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: authentik-ldap-tls
+spec:
+  # Certificate will be valid for 90 days and auto-renewed
+  duration: 2160h # 90d
+  renewBefore: 360h # 15d
+
+  # Subject and SANs
+  subject:
+    organizations:
+      - authentik
+  commonName: ldap.${SECRET_DOMAIN}
+
+  # DNS names the certificate should be valid for
+  dnsNames:
+    - ldap.${SECRET_DOMAIN}
+
+  # Secret where the certificate will be stored
+  secretName: authentik-ldap-tls
+
+  # Use Let's Encrypt production issuer for a trusted certificate
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+    group: cert-manager.io
+
+  # Key configuration
+  privateKey:
+    algorithm: RSA
+    size: 2048
+
+  # Certificate usages
+  usages:
+    - digital signature
+    - key encipherment
+    - server auth
+    - client auth

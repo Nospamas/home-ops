@@ -62,10 +62,11 @@ spec:
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
-        runAsUser: 3002
-        runAsGroup: 3002
-        fsGroup: 3002
+        runAsUser: 4012
+        runAsGroup: 4014
+        fsGroup: 4014
         fsGroupChangePolicy: OnRootMismatch
+        supplementalGroups: [4012, 4014] # backups group
     service:
       app:
         ports:

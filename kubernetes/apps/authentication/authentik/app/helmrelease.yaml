@@ -1,0 +1,175 @@
+---
+# yaml-language-server: $schema=https://schemas.tholinka.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app authentik
+spec:
+  interval: 15m
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  driftDetection:
+    ignore:
+      - paths: [/spec/replicas]
+  install:
+    strategy:
+      name: RetryOnFailure
+  upgrade:
+    cleanupOnFail: true
+    strategy:
+      name: RemediateOnFailure
+    remediation:
+      remediateLastFailure: true
+      retries: 2
+  values:
+    # if I ever lose the db, my setup is based heavily on https://github.com/joryirving/home-ops/tree/77478606352bfb43e6c1c5fcf0b5fa134d007095/terraform/authentik
+    global:
+      podAnnotations:
+        secret.reloader.stakater.com/reload: &secret authentik-secret
+      deploymentStrategy:
+        type: RollingUpdate
+      envFrom:
+        - secretRef:
+            name: *secret
+    authentik:
+      postgresql:
+        host: postgres-authentik-rw.authentication.svc.cluster.local
+        user: file:///postgres-creds/username
+        password: file:///postgres-creds/password
+      email:
+        port: 587
+        use_tls: true
+      redis:
+        host: dragonfly-authentik
+    server:
+      initContainers:
+        - name: cert-rename
+          image: alpine:latest
+          command:
+            - sh
+            - -c
+            - |
+              # Copy and rename certificate files for Authentik auto-discovery
+              cp /tmp-certs/tls.crt /certs/ldap/fullchain.pem
+              cp /tmp-certs/tls.key /certs/ldap/privkey.pem
+              # Set proper ownership and permissions for authentik user (uid=1000)
+              chown 1000:1000 /certs/ldap/fullchain.pem /certs/ldap/privkey.pem
+              chmod 644 /certs/ldap/fullchain.pem
+              chmod 600 /certs/ldap/privkey.pem
+          volumeMounts:
+            - name: ldap-tls-source
+              mountPath: /tmp-certs
+              readOnly: true
+            - name: ldap-certs
+              mountPath: /certs/ldap
+      volumes:
+        - name: postgres-creds
+          secret:
+            secretName: authentik-db
+        - name: ldap-tls-source
+          secret:
+            secretName: authentik-ldap-tls
+        - name: ldap-certs
+          emptyDir: {}
+      volumeMounts:
+        - name: postgres-creds
+          mountPath: /postgres-creds
+          readOnly: true
+        - name: ldap-certs
+          mountPath: /certs/ldap
+          readOnly: true
+      # Add LDAPS container port
+      containerPorts:
+        ldaps: 6636
+      autoscaling: &autoscaling
+        enabled: true
+        minReplicas: 1
+        maxReplicas: 5
+        targetCPUUtilizationPercentage: 60
+        behavior:
+          scaleUp:
+            stabilizationWindowSeconds: 300
+          scaleDown:
+            stabilizationWindowSeconds: 300
+      resources:
+        requests:
+          cpu: 300m
+        limits:
+          memory: 1Gi
+      metrics:
+        enabled: true
+        serviceMonitor:
+          enabled: true
+      route:
+        main:
+          enabled: true
+          hostnames:
+            - auth.${SECRET_DOMAIN}
+          parentRefs:
+            - name: envoy-external
+              namespace: network
+              sectionName: https
+    worker:
+      initContainers:
+        - name: cert-rename
+          image: alpine:latest
+          command:
+            - sh
+            - -c
+            - |
+              # Copy and rename certificate files for Authentik auto-discovery
+              cp /tmp-certs/tls.crt /certs/ldap/fullchain.pem
+              cp /tmp-certs/tls.key /certs/ldap/privkey.pem
+              # Set proper ownership and permissions for authentik user (uid=1000)
+              chown 1000:1000 /certs/ldap/fullchain.pem /certs/ldap/privkey.pem
+              chmod 644 /certs/ldap/fullchain.pem
+              chmod 600 /certs/ldap/privkey.pem
+          volumeMounts:
+            - name: ldap-tls-source
+              mountPath: /tmp-certs
+              readOnly: true
+            - name: ldap-certs
+              mountPath: /certs/ldap
+      volumes:
+        - name: postgres-creds
+          secret:
+            secretName: authentik-db
+        - name: ldap-tls-source
+          secret:
+            secretName: authentik-ldap-tls
+        - name: ldap-certs
+          emptyDir: {}
+      volumeMounts:
+        - name: postgres-creds
+          mountPath: /postgres-creds
+          readOnly: true
+        - name: ldap-certs
+          mountPath: /certs/ldap
+          readOnly: true
+      autoscaling: *autoscaling
+      resources:
+        requests:
+          cpu: 300m
+        limits:
+          memory: 1Gi
+    prometheus:
+      rules:
+        enabled: true
+    # Additional objects to create LDAPS TCPRoute
+    additionalObjects:
+      - apiVersion: gateway.networking.k8s.io/v1alpha2
+        kind: TCPRoute
+        metadata:
+          name: authentik-ldaps
+          annotations:
+            external-dns.alpha.kubernetes.io/hostname: ldap.${SECRET_DOMAIN}
+        spec:
+          parentRefs:
+            - name: envoy-internal
+              namespace: network
+              sectionName: ldaps
+          rules:
+            - backendRefs:
+                - name: ak-outpost-ldap
+                  port: 636

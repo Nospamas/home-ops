@@ -71,11 +71,11 @@ spec:
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
-        runAsUser: 3001
-        runAsGroup: 3001
-        fsGroup: 3001
+        runAsUser: 4009
+        runAsGroup: 4009
+        fsGroup: 4009
         fsGroupChangePolicy: OnRootMismatch
-        supplementalGroups: [44, 10000]
+        supplementalGroups: [4017, 4019, 4018] # movies, tv, music
         seccompProfile: {type: RuntimeDefault}
       nodeSelector:
         intel.feature.node.kubernetes.io/gpu: "true"
