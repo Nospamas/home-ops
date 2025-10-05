@@ -60,3 +60,9 @@ spec:
         certificateRefs:
           - kind: Secret
             name: ${SECRET_DOMAIN/./-}-production-tls
+    - name: ldaps
+      protocol: TCP
+      port: 636
+      allowedRoutes:
+        namespaces:
+          from: All
