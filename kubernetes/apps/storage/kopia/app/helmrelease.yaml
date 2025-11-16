@@ -108,7 +108,7 @@ spec:
             subPath: repository.config
       repository:
         type: nfs
-        server: 192.168.0.51
+        server: truenas.server.internal
         path: /mnt/Storage/backups/kopia/repository
         globalMounts:
           - path: /repository

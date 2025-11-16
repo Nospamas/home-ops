@@ -139,19 +139,19 @@ spec:
         type: emptyDir
       movies:
         type: nfs
-        server: 192.168.0.51
+        server: truenas.server.internal
         path: /mnt/Storage/movies
         globalMounts:
           - path: /media/movies
       tv:
         type: nfs
-        server: 192.168.0.51
+        server: truenas.server.internal
         path: /mnt/Storage/tv
         globalMounts:
           - path: /media/tv
       music:
         type: nfs
-        server: 192.168.0.51
+        server: truenas.server.internal
         path: /mnt/Storage/music
         globalMounts:
           - path: /media/music
