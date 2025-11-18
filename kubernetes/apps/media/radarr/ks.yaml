@@ -6,6 +6,10 @@ metadata:
   name: &app radarr
   namespace: &namespace media
 spec:
+  targetNamespace: *namespace
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
   interval: 1h
   components:
     - ../../../../components/volsync
@@ -23,7 +27,6 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: *namespace
   decryption:
     provider: sops
     secretRef:
