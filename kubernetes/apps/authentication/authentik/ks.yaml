@@ -106,22 +106,3 @@ spec:
     provider: sops
     secretRef:
       name: sops-age
----
-# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: &app authentik-references
-  namespace: &namespace authentication
-spec:
-  interval: 1h
-  path: ./kubernetes/apps/authentication/authentik/references
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  targetNamespace: *namespace
-  postBuild:
-    substitute:
-      AUTH_SVC: ak-outpost-authentik-embedded-outpost
