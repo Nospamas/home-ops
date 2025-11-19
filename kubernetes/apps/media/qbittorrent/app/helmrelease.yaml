@@ -100,7 +100,7 @@ spec:
         server: truenas.server.internal
         path: /mnt/Storage/downloading
         globalMounts:
-          - path: /media/Downloads/qbittorrent
+          - path: /downloads
       qbrr:
         type: image
         image: ghcr.io/buroa/qbrr:0.1.1@sha256:fe4a1d100ba896999253a5122d9c77cc4920779d618c23f765458cb6ec7383ca
