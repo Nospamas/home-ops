@@ -83,6 +83,11 @@ spec:
           - backendRefs:
               - identifier: app
                 port: *port
+        annotations:
+          gethomepage.dev/enabled: 'true'
+          gethomepage.dev/name: Kopia
+          gethomepage.dev/group: Infrastructure
+          gethomepage.dev/icon: kopia.svg
     configMaps:
       config:
         data:

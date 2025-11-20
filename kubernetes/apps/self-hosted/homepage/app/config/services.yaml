@@ -1,0 +1,67 @@
+---
+- Media:
+    # - Bazarr:
+    #     icon: bazarr.svg
+    #     href: https://bazarr.${SECRET_DOMAIN}
+    #     #description: Subtitles Management
+    #     app: bazarr
+    #     namespace: media
+    #     widget:
+    #       type: bazarr
+    #       url: http://bazarr.media.svc.cluster.local.:6767
+    #       key: '{{HOMEPAGE_VAR_BAZARR_TOKEN}}'
+    - Plex:
+        icon: plex.svg
+        href: https://plex.${SECRET_DOMAIN}
+        #description: Media Server
+        app: plex
+        namespace: media
+        widget:
+          type: plex
+          url: http://plex.media.svc.cluster.local.:32400
+          key: '{{HOMEPAGE_VAR_PLEX_TOKEN}}'
+          enableNowPlaying: true
+    - Prowlarr:
+        icon: prowlarr.svg
+        href: https://prowlarr.${SECRET_DOMAIN}
+        app: prowlarr
+        namespace: media
+        widget:
+          type: prowlarr
+          url: http://prowlarr.media.svc.cluster.local.:80
+          key: '{{HOMEPAGE_VAR_PROWLARR_TOKEN}}'
+    - qBittorrent:
+        icon: qbittorrent.svg
+        href: https://qbittorrent.${SECRET_DOMAIN}
+        app: qbittorrent
+        namespace: media
+        widget:
+          type: qbittorrent
+          url: http://qbittorrent.media.svc.cluster.local.:80
+          enableLeechProgress: true # optional, defaults to false
+    - Radarr:
+        href: https://radarr.${SECRET_DOMAIN}
+        icon: radarr.svg
+        #description: Movies
+        app: radarr
+        namespace: media
+        widget:
+          type: radarr
+          url: http://radarr.media.svc.cluster.local.:80
+          key: '{{HOMEPAGE_VAR_RADARR_TOKEN}}'
+    - Sonarr:
+        href: https://sonarr.${SECRET_DOMAIN}
+        icon: sonarr.svg
+        #description: TV Shows
+        app: sonarr
+        namespace: media
+        widget:
+          type: sonarr
+          url: http://sonarr.media.svc.cluster.local.:80
+          key: '{{HOMEPAGE_VAR_SONARR_TOKEN}}'
+- Infrastructure:
+    - Unifi:
+        icon: unifi.svg
+        href: https://router.internal
+        #description: Unifi Network Application
+        namespace: network

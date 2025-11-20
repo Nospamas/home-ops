@@ -225,11 +225,11 @@ spec:
               sessionName: *app
               type: Cookie
               absoluteTimeout: 35m
-        # annotations:
-        #   gethomepage.dev/enabled: 'true'
-        #   gethomepage.dev/group: Infrastructure
-        #   gethomepage.dev/name: Pi-Hole
-        #   gethomepage.dev/icon: pi-hole.svg
+        annotations:
+          gethomepage.dev/enabled: 'true'
+          gethomepage.dev/group: Infrastructure
+          gethomepage.dev/name: Pi-Hole
+          gethomepage.dev/icon: pi-hole.svg
 
     serviceMonitor:
       nas-exporter: &serviceMonitor

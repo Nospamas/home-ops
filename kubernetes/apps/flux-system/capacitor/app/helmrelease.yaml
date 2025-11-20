@@ -63,3 +63,8 @@ spec:
           - backendRefs:
               - identifier: app
                 port: *port
+        annotations:
+          gethomepage.dev/enabled: 'true'
+          gethomepage.dev/name: Capacitor
+          gethomepage.dev/group: Infrastructure
+          gethomepage.dev/icon: capacitor.svg

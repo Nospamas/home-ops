@@ -110,6 +110,14 @@ spec:
             - name: envoy-external
               namespace: network
               sectionName: https
+          annotations:
+            gethomepage.dev/enabled: 'true'
+            gethomepage.dev/icon: authentik.png
+            gethomepage.dev/name: Authentik
+            gethomepage.dev/group: Infrastructure
+            gethomepage.dev/href: https://auth.${SECRET_DOMAIN}
+            gethomepage.dev/app: authentik
+            gethomepage.dev/namespace: authentication
     worker:
       initContainers:
         - name: cert-rename
