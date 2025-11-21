@@ -74,13 +74,12 @@ echo "Updating pihole.toml"
 
 pihole-FTL --config misc.etc_dnsmasq_d true
 pihole-FTL --config dns.blockESNI false
-pihole-FTL --config dns.domain internal
+pihole-FTL --config dns.domain.name internal
 pihole-FTL --config webserver.domain "pihole.${SECRET_DOMAIN}"
 pihole-FTL --config dns.revServers '[
 	"true,192.168.0.0/24,192.168.11.1,server.local",
 	"true,192.168.3.0/24,192.168.11.1,computer.local"
 	]'
-pihole-FTL --config dns.domain local
 pihole-FTL --config dns.reply.host.force4 true
 pihole-FTL --config dns.reply.host.IPv4 192.168.2.254
 pihole-FTL --config dns.reply.blocking.force4 true
