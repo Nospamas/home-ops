@@ -6,7 +6,4 @@ namespace: authentication
 components:
   - ../../components/common
 resources:
-  # pull this secret in early so that it is available for postbuild replacements
-  - ./lldap/resources/secret.sops.yaml
   - ./authentik/ks.yaml
-  - ./lldap/ks.yaml
