@@ -1,0 +1,37 @@
+---
+# yaml-language-server: $schema=https://schemas.tholinka.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: grafana
+  namespace: &namespace observability
+spec:
+  targetNamespace: *namespace
+  interval: 1h
+  path: ./kubernetes/apps/observability/grafana/app
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  wait: true
+---
+# yaml-language-server: $schema=https://schemas.tholinka.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: grafana-instance
+  namespace: &namespace observability
+spec:
+  targetNamespace: *namespace
+  interval: 1h
+  dependsOn:
+    - name: grafana
+    - name: longhorn
+      namespace: storage
+  path: ./kubernetes/apps/observability/grafana/instance
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
