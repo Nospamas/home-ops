@@ -81,7 +81,7 @@ nodes:
   - hostname: "ctrl-02"
     ipAddress: "192.168.0.2"
     installDiskSelector:
-      serial: "2325E6E6D78C"
+      serial: "7VR00F2Z"
     machineSpec:
       secureboot: false
     schematic: *schematic
