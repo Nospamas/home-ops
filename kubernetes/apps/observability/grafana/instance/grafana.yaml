@@ -58,17 +58,17 @@ spec:
                 - name: &clientId GF_AUTH_GENERIC_OAUTH_CLIENT_ID
                   valueFrom:
                     secretKeyRef:
-                      name: &secret grafana-secret
+                      name: &oauthSecret grafana-oauth-secret
                       key: *clientId
                 - name: &clientSecret GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET
                   valueFrom:
                     secretKeyRef:
-                      name: *secret
+                      name: *oauthSecret
                       key: *clientSecret
                 - name: &adminPass GF_SECURITY_ADMIN_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: *secret
+                      name: &adminSecret grafana-oauth-secret
                       key: *adminPass
                 - name: GF_DATE_FORMATS_USE_BROWSER_LOCALE
                   value: 'true'

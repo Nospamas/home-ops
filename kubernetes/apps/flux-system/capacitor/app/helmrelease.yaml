@@ -48,10 +48,6 @@ spec:
         ports:
           http:
             port: &port 9000
-    serviceMonitor:
-      app:
-        endpoints:
-          - port: http
     route:
       app:
         hostnames: ["{{ .Release.Name }}.${SECRET_DOMAIN}"]
