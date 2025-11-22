@@ -12,3 +12,4 @@ resources:
   - ./spegel/ks.yaml
   - ./intel/common/helmrepository.yaml
   - ./intel/ks.yaml
+  - ./tuppr/ks.yaml

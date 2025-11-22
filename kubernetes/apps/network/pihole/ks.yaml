@@ -6,6 +6,7 @@ metadata:
   name: &app pihole
   namespace: &namespace network
 spec:
+  targetNamespace: *namespace
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
@@ -21,7 +22,6 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: *namespace
   timeout: 10m
   wait: false
   postBuild:

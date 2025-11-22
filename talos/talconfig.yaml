@@ -202,7 +202,8 @@ controlPlane:
   patches:
     - "@./patches/controller/admission-controller-patch.yaml"
     - "@./patches/controller/cluster.yaml"
-    - "@./patches/controller/kubelet.yaml"
+    - "@./patches/controller/machine-kubelet.yaml"
+    - "@./patches/controller/machine-features.yaml"
   extraManifests:
   - "@./volumes/volume-ephemeral.yaml"
   - "@./volumes/volume-ssd.yaml"
