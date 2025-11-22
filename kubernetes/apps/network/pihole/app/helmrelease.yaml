@@ -4,6 +4,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: &app pihole
+  namespace: network
 spec:
   interval: 1h
   chartRef:
@@ -156,9 +157,10 @@ spec:
                   initialDelaySeconds: 10
                   periodSeconds: 20
                   successThreshold: 1
-                  tcpSocket:
+                  httpGet:
+                    path: /metrics
                     port: &exporter-port 9617
-                  timeoutSeconds: 1
+                  timeoutSeconds: 10
               readiness: *exporter-probes
             securityContext:
               allowPrivilegeEscalation: false
