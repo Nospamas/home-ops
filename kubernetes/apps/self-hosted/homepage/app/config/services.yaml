@@ -1,15 +1,15 @@
 ---
 - Media:
-    # - Bazarr:
-    #     icon: bazarr.svg
-    #     href: https://bazarr.${SECRET_DOMAIN}
-    #     #description: Subtitles Management
-    #     app: bazarr
-    #     namespace: media
-    #     widget:
-    #       type: bazarr
-    #       url: http://bazarr.media.svc.cluster.local.:6767
-    #       key: '{{HOMEPAGE_VAR_BAZARR_TOKEN}}'
+    - Bazarr:
+        icon: bazarr.svg
+        href: https://bazarr.${SECRET_DOMAIN}
+        #description: Subtitles Management
+        app: bazarr
+        namespace: media
+        widget:
+          type: bazarr
+          url: http://bazarr.media.svc.cluster.local.:80
+          key: '{{HOMEPAGE_VAR_BAZARR_TOKEN}}'
     - Plex:
         icon: plex.svg
         href: https://plex.${SECRET_DOMAIN}
