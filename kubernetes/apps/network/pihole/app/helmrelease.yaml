@@ -12,7 +12,7 @@ spec:
     name: app-template
   driftDetection:
     mode: enabled
-  timeout: 30m
+  timeout: 45m
   install:
     remediation:
       retries: -1
