@@ -14,7 +14,7 @@ spec:
       value: https://api.github.com/
     - name: RENOVATE_ALLOW_PLUGINS
       value: "true"
-  image: renovate/renovate:41.43.3
+  image: renovate/renovate:41.173.1
   parallelism: 5
   resources:
     requests:
