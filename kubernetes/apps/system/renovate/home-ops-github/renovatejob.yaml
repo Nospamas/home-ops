@@ -16,7 +16,7 @@ spec:
       value: "true"
     - name: RENOVATE_LOG_LEVEL
       value: debug
-  image: renovate/renovate:41.173.1
+  image: renovate/renovate:42.26.3
   parallelism: 5
   resources:
     requests:
