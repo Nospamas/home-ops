@@ -13,3 +13,4 @@ resources:
   - ./intel/common/helmrepository.yaml
   - ./intel/ks.yaml
   - ./tuppr/ks.yaml
+  - ./renovate/ks.yaml

@@ -1,0 +1,23 @@
+apiVersion: renovate-operator.mogenius.com/v1alpha1
+kind: RenovateJob
+metadata:
+  annotations:
+  name: renovate-github
+  namespace: renovate-operator
+spec:
+  schedule: 0 * * * *
+  discoveryFilter: nospamas/home-ops
+  extraEnv:
+    - name: RENOVATE_PLATFORM
+      value: github
+    - name: RENOVATE_ENDPOINT
+      value: https://api.github.com/
+    - name: RENOVATE_ALLOW_PLUGINS
+      value: "true"
+  image: renovate/renovate:41.43.3
+  parallelism: 5
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  secretRef: renovate-secret
