@@ -2,10 +2,5 @@
 # yaml-language-server: $schema=https://json.schemastore.org/kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: self-hosted
-components:
-  - ../../components/common
-  - ../../components/repos/cluster-template
 resources:
-  - ./homepage/ks.yaml
-  - ./atuin/ks.yaml
+  - ./secret.sops.yaml
