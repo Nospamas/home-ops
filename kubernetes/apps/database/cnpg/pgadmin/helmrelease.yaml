@@ -63,6 +63,7 @@ spec:
             env:
               PGADMIN_DISABLE_POSTFIX: 'True'
               PGADMIN_LISTEN_PORT: &port 80
+              PGADMIN_SERVER_JSON_FILE: /pgadmin4/servers.json
               PGADMIN_REPLACE_SERVERS_ON_STARTUP: 'True'
               PGADMIN_CONFIG_SERVER_MODE: 'True'
               PGPASS_FILE: &pgpass /pgadmin4/pgpass
