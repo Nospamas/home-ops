@@ -9,3 +9,4 @@ components:
 resources:
   - ./homepage/ks.yaml
   - ./atuin/ks.yaml
+  - ./immich/ks.yaml
