@@ -1,7 +1,7 @@
 # kubelet mounts for control-plane
 machine:
   sysctls:
-    vm.nr_hugepages: "1024"
+    vm.nr_hugepages: "2048"
   kubelet:
     extraMounts:
       - destination: /var/mnt/host-nvme/

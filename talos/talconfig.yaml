@@ -204,9 +204,8 @@ controlPlane:
     - "@./patches/controller/cluster.yaml"
     - "@./patches/controller/machine-kubelet.yaml"
     - "@./patches/controller/machine-features.yaml"
-  extraManifests:
-  - "@./volumes/volume-ephemeral.yaml"
-  - "@./volumes/volume-ssd.yaml"
+    - "@./volumes/volume-ephemeral.yaml"
+    - "@./volumes/volume-ssd.yaml"
 
 worker:
   nodeLabels:
@@ -214,5 +213,4 @@ worker:
     topology.kubernetes.io/zone: m
   patches:
     - "@./patches/worker/kubelet.yaml"
-  extraManifests:
-  - "@./volumes/volume-ephemeral.yaml"
+    - "@./volumes/volume-ephemeral.yaml"
