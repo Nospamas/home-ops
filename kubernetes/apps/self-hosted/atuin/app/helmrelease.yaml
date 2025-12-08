@@ -6,6 +6,10 @@ metadata:
   name: &app atuin
 spec:
   interval: 1h
+  timeout: 10m
+  install:
+    remediation:
+      retries: 3
   chartRef:
     kind: OCIRepository
     name: app-template
