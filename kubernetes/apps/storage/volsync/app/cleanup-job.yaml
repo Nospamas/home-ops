@@ -1,0 +1,60 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/batch/cronjob_v1.json
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: volsync-cleanup
+  namespace: storage
+spec:
+  schedule: "55 * * * *"  # Run at 55 minutes past every hour to give time for jobs to run and be done for 45 minutes
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 300  # Clean up completed jobs after 5 minutes
+      template:
+        spec:
+          serviceAccountName: volsync-cleanup
+          containers:
+            - name: cleanup
+              image: ghcr.io/nospamas/volsync-cleanup:20251210-d571b5f@sha256:b444134a052019ce191d3c229f28de48f25317a2511542068a3435b3fb1532fe
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 64Mi
+                limits:
+                  cpu: 100m
+                  memory: 128Mi
+          restartPolicy: OnFailure
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: volsync-cleanup
+  namespace: storage
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: volsync-cleanup
+rules:
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["get", "list", "delete"]
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: volsync-cleanup
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: volsync-cleanup
+subjects:
+  - kind: ServiceAccount
+    name: volsync-cleanup
+    namespace: storage
