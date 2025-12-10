@@ -128,6 +128,8 @@ spec:
       VOLSYNC_ACCESSMODES: ReadWriteMany
       VOLSYNC_STORAGECLASS: longhorn-ultra-fast
       VOLSYNC_SNAPSHOTCLASS: longhorn
+      VOLSYNC_SCHEDULE: "0 0/4 * * *"
+      VOLSYNC_HOURLY: "6"
   prune: true
   sourceRef:
     kind: GitRepository

@@ -51,6 +51,8 @@ spec:
     substitute:
       APP: *app
       VOLSYNC_CAPACITY: 50Gi
+      VOLSYNC_SCHEDULE: "0 0/4 * * *"
+      VOLSYNC_HOURLY: "6"
   prune: true
   sourceRef:
     kind: GitRepository
