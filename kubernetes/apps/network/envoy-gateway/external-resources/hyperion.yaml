@@ -1,0 +1,54 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hyperion
+spec:
+  ports:
+    - port: 8090
+      protocol: TCP
+      targetPort: 8090
+      name: http
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: hyperion
+  labels:
+    kubernetes.io/service-name: hyperion
+addressType: FQDN
+ports:
+- name: http
+  protocol: TCP
+  port: 8090
+endpoints:
+- addresses:
+  - "hyperion.server.internal"
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: hyperion
+  annotations:
+    gethomepage.dev/href: "https://hyperion.${SECRET_DOMAIN}"
+    gethomepage.dev/enabled: 'true'
+    gethomepage.dev/group: Home
+    gethomepage.dev/name: Hyperion
+    gethomepage.dev/icon: hyperion.svg
+    gethomepage.dev/app: "envoy-gateway"
+spec:
+  hostnames:
+    - hyperion.${SECRET_DOMAIN}
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
+    name: envoy-internal
+    namespace: network
+    sectionName: https
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: hyperion
+      namespace: network
+      port: 8090
