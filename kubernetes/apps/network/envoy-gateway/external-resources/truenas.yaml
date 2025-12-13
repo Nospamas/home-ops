@@ -30,18 +30,20 @@ kind: HTTPRoute
 metadata:
   name: truenas
   annotations:
+    external-dns.alpha.kubernetes.io/hostname: &host truenas.${SECRET_DOMAIN}
     gethomepage.dev/href: "https://truenas.${SECRET_DOMAIN}"
     gethomepage.dev/enabled: 'true'
-    gethomepage.dev/group: Home
+    gethomepage.dev/pod-selector: ""
+    gethomepage.dev/group: Infrastructure
     gethomepage.dev/name: TrueNAS
     gethomepage.dev/icon: truenas.svg
-    gethomepage.dev/app: "envoy-gateway"
+    gethomepage.dev/widget.type: truenas
     gethomepage.dev/widget.url: https://truenas.server.internal
     gethomepage.dev/widget.key: '{{HOMEPAGE_VAR_TRUENAS_TOKEN}}'
     gethomepage.dev/widget.enablePools: true
 spec:
   hostnames:
-    - truenas.${SECRET_DOMAIN}
+    - *host
   parentRefs:
   - group: gateway.networking.k8s.io
     kind: Gateway
