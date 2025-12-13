@@ -10,7 +10,7 @@ metadata:
     gethomepage.dev/name: Renovate
     gethomepage.dev/group: Infrastructure
     gethomepage.dev/href: https://renovate.${SECRET_DOMAIN}
-    gethomepage.dev/app: renovate-operator-renovate-operator
+    gethomepage.dev/pod-selector: 'app=renovate-operator-renovate-operator'
     gethomepage.dev/namespace: system
 spec:
   hostnames: ["renovate.${SECRET_DOMAIN}"]
