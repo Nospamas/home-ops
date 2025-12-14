@@ -62,6 +62,6 @@
 - Infrastructure:
     - Unifi:
         icon: unifi.svg
-        href: https://router.internal
+        href: https://unifi.ui.com
         #description: Unifi Network Application
         namespace: network
