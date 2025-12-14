@@ -21,18 +21,6 @@ spec:
     - <<: *valuesFrom
       targetPath: immich.configuration.oauth.clientSecret
       valuesKey: IMMICH_OAUTH_CLIENT_SECRET
-    - <<: *valuesFrom
-      targetPath: immich.configuration.notifications.smtp.transport.host
-      valuesKey: EMAIL_SERVER
-    - <<: *valuesFrom
-      targetPath: immich.configuration.notifications.smtp.transport.username
-      valuesKey: EMAIL_USER
-    - <<: *valuesFrom
-      targetPath: immich.configuration.notifications.smtp.transport.password
-      valuesKey: EMAIL_PASS
-    - <<: *valuesFrom
-      targetPath: immich.configuration.notifications.smtp.from
-      valuesKey: EMAIL_FROM
   values:
     valkey:
       enabled: false
@@ -96,7 +84,7 @@ spec:
             import: true
         notifications:
           smtp:
-            enabled: true
+            enabled: false
         oauth:
           autoLaunch: true
           autoRegister: true

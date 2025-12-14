@@ -28,9 +28,9 @@ spec:
     substitute:
       APP: immich
       DRAGONFLY_REQUESTS_MEMORY: 512Mi
-      CNPG_IMAGE: ghcr.io/cloudnative-pg/postgresql
+      CNPG_IMAGE: ghcr.io/immich-app/postgres
       # renovate: datasource=docker depName=cloudnative-pg/postgresql
-      CNPG_VERSION: 18.1-standard-trixie
+      CNPG_VERSION: 18-vectorchord0.5.3
   components:
     # nobackup for init with no prior backups...
     # - ../../../../components/cnpg/nobackup
@@ -68,6 +68,8 @@ spec:
         metadata:
           name: postgres-${APP}
         spec:
+          postgresUID: 999
+          postgresGID: 999
           bootstrap:
             initdb:
               database: immich
@@ -85,14 +87,17 @@ spec:
               login: true
               superuser: true
           postgresql:
-            extensions:
-              - name: vchord
-                image:
-                  reference: ghcr.io/tensorchord/vchord-scratch:pg18-v0.5.3@sha256:c310ede47f7f82bd257c3e53806d60680d5899c318ca946fb313efad9a90a78e
-                dynamic_library_path:
-                  - /usr/lib/postgresql/18/lib/
-                extension_control_path:
-                  - /usr/share/postgresql/18/
+            parameters:
+              max_connections: "1000"
+              shared_buffers: 2GB
+            shared_preload_libraries:
+              - "vchord.so"
+          resources:
+            requests:
+              cpu: 50m
+              memory: 2Gi
+            limits:
+              memory: 4Gi
           # bootstrap:
           #   recovery:
           #     recoveryTarget:
@@ -123,6 +128,8 @@ spec:
       VOLSYNC_ACCESSMODES: ReadWriteMany
       VOLSYNC_STORAGECLASS: longhorn-ultra-fast
       VOLSYNC_SNAPSHOTCLASS: longhorn
+      VOLSYNC_SCHEDULE: "0 0/4 * * *"
+      VOLSYNC_HOURLY: "6"
   prune: true
   sourceRef:
     kind: GitRepository
