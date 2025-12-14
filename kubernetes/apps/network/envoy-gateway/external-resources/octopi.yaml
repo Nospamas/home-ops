@@ -30,15 +30,16 @@ kind: HTTPRoute
 metadata:
   name: octopi
   annotations:
+    external-dns.alpha.kubernetes.io/hostname: &host octopi.${SECRET_DOMAIN}
     gethomepage.dev/href: "https://octopi.${SECRET_DOMAIN}"
-    gethomepage.dev/enabled: 'true'
-    gethomepage.dev/group: IoT
+    gethomepage.dev/group: Home
     gethomepage.dev/name: OctoPi
     gethomepage.dev/icon: octoprint.svg
-    gethomepage.dev/app: "envoy-gateway"
+    gethomepage.dev/enabled: 'true'
+    gethomepage.dev/pod-selector: ""
 spec:
   hostnames:
-    - octopi.${SECRET_DOMAIN}
+    - *host
   parentRefs:
   - group: gateway.networking.k8s.io
     kind: Gateway
