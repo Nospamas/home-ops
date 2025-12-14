@@ -6,6 +6,10 @@ metadata:
   name: &app immich-databases
   namespace: &namespace self-hosted
 spec:
+  targetNamespace: *namespace
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
   interval: 1h
   path: ./kubernetes/apps/self-hosted/immich/cluster
   prune: true
@@ -13,10 +17,6 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: *namespace
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
   dependsOn:
     - name: dragonfly
       namespace: database
@@ -28,8 +28,9 @@ spec:
     substitute:
       APP: immich
       DRAGONFLY_REQUESTS_MEMORY: 512Mi
-      # renovate: datasource=docker depName=ghcr.io/cloudnative-pg/postgresql
-      CNPG_VERSION: 17.6-bookworm
+      CNPG_IMAGE: ghcr.io/immich-app/postgres
+      # renovate: datasource=docker depName=cloudnative-pg/postgresql
+      CNPG_VERSION: 18-vectorchord0.5.3
   components:
     # nobackup for init with no prior backups...
     # - ../../../../components/cnpg/nobackup
@@ -67,12 +68,16 @@ spec:
         metadata:
           name: postgres-${APP}
         spec:
+          postgresUID: 999
+          postgresGID: 999
           bootstrap:
             initdb:
               database: immich
               owner: immich-postgres
               secret:
                 name: immich-db
+              postInitApplicationSQL:
+                - CREATE EXTENSION IF NOT EXISTS vchord CASCADE;
           managed:
             roles:
             - name: immich-postgres
@@ -81,11 +86,18 @@ spec:
                 name: immich-db
               login: true
               superuser: true
-          extensions:
-            - name: vector
-            - name: vchord
-            - name: cube
-            - name: earthdistance
+          postgresql:
+            parameters:
+              max_connections: "1000"
+              shared_buffers: 2GB
+            shared_preload_libraries:
+              - "vchord.so"
+          resources:
+            requests:
+              cpu: 50m
+              memory: 2Gi
+            limits:
+              memory: 4Gi
           # bootstrap:
           #   recovery:
           #     recoveryTarget:
@@ -104,10 +116,7 @@ spec:
       app.kubernetes.io/name: *app
   interval: 1h
   dependsOn:
-    - name: dragonfly-cluster
-      namespace: database
-    - name: postgres-cluster
-      namespace: database
+    - name: immich-databases
   path: ./kubernetes/apps/self-hosted/immich/app
   components:
     - ../../../../components/volsync
@@ -116,6 +125,11 @@ spec:
     substitute:
       APP: *app
       VOLSYNC_CAPACITY: 500Gi
+      VOLSYNC_ACCESSMODES: ReadWriteMany
+      VOLSYNC_STORAGECLASS: longhorn-ultra-fast
+      VOLSYNC_SNAPSHOTCLASS: longhorn
+      VOLSYNC_SCHEDULE: "0 0/4 * * *"
+      VOLSYNC_HOURLY: "6"
   prune: true
   sourceRef:
     kind: GitRepository

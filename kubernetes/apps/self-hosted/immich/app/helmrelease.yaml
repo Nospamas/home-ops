@@ -16,23 +16,11 @@ spec:
     - &valuesFrom
       targetPath: immich.configuration.oauth.clientId
       kind: Secret
-      name: *app
+      name: immich-secrets
       valuesKey: IMMICH_OAUTH_CLIENT_ID
     - <<: *valuesFrom
       targetPath: immich.configuration.oauth.clientSecret
       valuesKey: IMMICH_OAUTH_CLIENT_SECRET
-    - <<: *valuesFrom
-      targetPath: immich.configuration.notifications.smtp.transport.host
-      valuesKey: EMAIL_SERVER
-    - <<: *valuesFrom
-      targetPath: immich.configuration.notifications.smtp.transport.username
-      valuesKey: EMAIL_USER
-    - <<: *valuesFrom
-      targetPath: immich.configuration.notifications.smtp.transport.password
-      valuesKey: EMAIL_PASS
-    - <<: *valuesFrom
-      targetPath: immich.configuration.notifications.smtp.from
-      valuesKey: EMAIL_FROM
   values:
     valkey:
       enabled: false
@@ -40,14 +28,6 @@ spec:
     global:
       annotations:
         reloader.stakater.com/auto: 'true'
-
-    persistence:
-      postgres-certs:
-        type: secret
-        name: 'postgres-{{ .Release.Name }}-cert'
-        defaultMode: 0440
-        globalMounts:
-          - path: /var/run/secrets/postgresql
 
     controllers:
       main:
@@ -57,7 +37,7 @@ spec:
               # renovate: datasource=github-releases depName=immich-app/immich
               tag: v2.3.1
             env:
-              REDIS_HOSTNAME: dragonfly-cluster.database.svc.cluster.local
+              REDIS_HOSTNAME: dragonfly-immich
               REDIS_PORT: '6379'
               REDIS_DBINDEX: '2'
 
@@ -66,8 +46,8 @@ spec:
               DB_URL:
                 valueFrom:
                   secretKeyRef:
-                    name: '{{ .Release.Name }}-postgres'
-                    key: url
+                    name: immich-secrets
+                    key: IMMICH_DB_URI
               DB_DATABASE_NAME: *app
 
     immich:
@@ -75,7 +55,7 @@ spec:
         enabled: true
       persistence:
         library:
-          existingClaim: immich-photos
+          existingClaim: *app
 
       configuration: # see https://immich.app/docs/install/config-file/
         backup:
@@ -104,7 +84,7 @@ spec:
             import: true
         notifications:
           smtp:
-            enabled: true
+            enabled: false
         oauth:
           autoLaunch: true
           autoRegister: true
