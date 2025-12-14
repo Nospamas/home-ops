@@ -6,7 +6,7 @@ spec:
   chart:
     spec:
       chart: renovate-operator
-      version: 1.9.0
+      version: 1.10.1
       reconcileStrategy: ChartVersion
       sourceRef:
         kind: HelmRepository
