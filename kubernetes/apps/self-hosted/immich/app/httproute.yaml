@@ -18,7 +18,7 @@ spec:
   hostnames:
     - 'photos.${SECRET_DOMAIN}'
   parentRefs:
-    - name: envoy-internal
+    - name: envoy-external
       namespace: network
   rules:
     - backendRefs:
