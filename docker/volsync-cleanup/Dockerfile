@@ -1,4 +1,4 @@
-FROM debian:12-slim
+FROM debian:13-slim
 
 # Install kubectl, jq, and other dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
