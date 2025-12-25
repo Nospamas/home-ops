@@ -14,8 +14,8 @@ spec:
       value: https://api.github.com/
     - name: RENOVATE_ALLOW_PLUGINS
       value: "true"
-    - name: RENOVATE_LOG_LEVEL
-      value: debug
+    # - name: RENOVATE_LOG_LEVEL
+    #   value: debug
   image: renovate/renovate:42.39.2
   parallelism: 5
   resources:
