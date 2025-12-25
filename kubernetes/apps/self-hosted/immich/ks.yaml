@@ -29,7 +29,7 @@ spec:
       APP: immich
       DRAGONFLY_REQUESTS_MEMORY: 512Mi
       CNPG_IMAGE: ghcr.io/immich-app/postgres
-      # renovate: datasource=docker depName=cloudnative-pg/postgresql
+      # renovate: datasource=docker depName=ghcr.io/immich-app/postgres
       CNPG_VERSION: 18-vectorchord0.5.3
   components:
     # nobackup for init with no prior backups...
