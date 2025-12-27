@@ -26,6 +26,7 @@ spec:
     substitute:
       APP: *app
       VOLSYNC_CAPACITY: 50Gi
+      VOLSYNC_CACHE_CAPACITY: 50Gi
       VOLSYNC_ACCESSMODES: ReadWriteMany
       VOLSYNC_SCHEDULE: "0 0/12 * * *"
       VOLSYNC_HOURLY: "4"
