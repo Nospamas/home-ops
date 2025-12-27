@@ -26,6 +26,15 @@ spec:
                     - FailedBarePods
                     - PodsWithLocalStorage
                     - SystemCriticalPods
+                evictableNamespaces:
+                  exclude:
+                    - storage
+                labelSelector:
+                  matchExpressions:
+                    - key: app.kubernetes.io/created-by
+                      operator: NotIn
+                      values:
+                        - volsync
             - name: LowNodeUtilization
               args:
                 metricsUtilization:
