@@ -20,7 +20,9 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      VOLSYNC_ACCESSMODES: ReadWriteMany
       VOLSYNC_CAPACITY: 1Gi
+      VOLSYNC_CACHE_SNAPSHOTCLASS: longhorn-fast
   prune: true
   sourceRef:
     kind: GitRepository
@@ -50,10 +52,11 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      VOLSYNC_ACCESSMODES: ReadWriteMany
+      VOLSYNC_CACHE_SNAPSHOTCLASS: longhorn-fast
       VOLSYNC_CAPACITY: 50Gi
       VOLSYNC_SCHEDULE: "0 0/4 * * *"
       VOLSYNC_HOURLY: "6"
-      VOLSYNC_ACCESSMODES: ReadWriteMany
   prune: true
   sourceRef:
     kind: GitRepository
