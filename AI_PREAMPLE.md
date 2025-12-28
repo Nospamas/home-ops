@@ -2,7 +2,7 @@ You should not modify the k8s cluster by directly applying, you may make code ch
 
 Namespaces are broader than common. You can find the following utilities in the following namespaces:
 
-`storage` contains:
+the `storage` namespace contains:
 - Longhorn
 - Volsync
 
