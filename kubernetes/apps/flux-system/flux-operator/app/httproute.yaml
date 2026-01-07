@@ -1,0 +1,25 @@
+---
+# yaml-language-server: $schema=https://schemas.budimanjojo.com/gateway.networking.k8s.io/httproute_v1.json
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: flux-operator
+  annotations:
+    gethomepage.dev/enabled: 'true'
+    gethomepage.dev/icon: flux-operator.png
+    gethomepage.dev/name: Flux Operator
+    gethomepage.dev/group: Infrastructure
+    gethomepage.dev/href: https://flux-operator.${SECRET_DOMAIN}
+    gethomepage.dev/app: flux-operator
+    gethomepage.dev/namespace: flux-system
+spec:
+  hostnames:
+    - flux-operator.${SECRET_DOMAIN}
+  parentRefs:
+    - name: envoy-internal
+      namespace: network
+  rules:
+    - backendRefs:
+        - name: flux-operator
+          namespace: flux-system
+          port: 9080

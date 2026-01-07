@@ -39,7 +39,7 @@ spec:
             image:
               repository: mirror.gcr.io/filebrowser/filebrowser
               # renovate: datasource=docker depName=docker.io/filebrowser/filebrowser
-              tag: v2.52.0@sha256:363c1eae79e7c08bbb994c3511875cbcb65e70df9ac850221d60400c362f4ff9
+              tag: v2.53.1@sha256:a22a0e9cddfd9a83e10a0d53453fb412e152693257065299a78481a75a8c90ce
             env:
               TZ: ${TIMEZONE:=America/Vancouver}
               FB_DATABASE: /config/filebrowser.db
