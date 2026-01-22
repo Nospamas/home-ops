@@ -16,7 +16,7 @@ spec:
       value: "true"
     # - name: RENOVATE_LOG_LEVEL
     #   value: debug
-  image: ghcr.io/renovatebot/renovate:42.64.0@sha256:5baf89c20738985b2ba2d9a2e1b66265cb2cb514e095d87d49f9c331e377e983
+  image: ghcr.io/renovatebot/renovate:42.89.4@sha256:72c7882b09adc9ff1508ab5234e6057e7f24bc287ab593693275da7afb40180c
   parallelism: 5
   resources:
     requests:
