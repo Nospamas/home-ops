@@ -6,7 +6,7 @@ metadata:
   name: volsync-cleanup
   namespace: storage
 spec:
-  schedule: "0 0 * * *"  # Run at midnight
+  schedule: "45 * * * *"  # Run at 45 minutes past each hour
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
