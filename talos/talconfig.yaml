@@ -85,7 +85,6 @@ nodes:
     machineSpec:
       secureboot: false
     schematic: *schematic
-    talosImageURL: factory.talos.dev/installer/65cf8364cd0de4cf7b851dc7067a2db83d0ba04f11d8635c6cd3334be6ffb825
     controlPlane: true
     networkInterfaces:
       - interface: eno1
