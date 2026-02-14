@@ -43,6 +43,10 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: volsync
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
   dependsOn:
     - name: volsync
       namespace: storage
