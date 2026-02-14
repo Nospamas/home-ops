@@ -8,6 +8,10 @@ spec:
   kubernetes:
     # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
     version: v1.35.0
+  talosctl:
+    image:
+      repository: ghcr.io/siderolabs/talosctl
+      tag: v1.12.4
   healthChecks:
     - apiVersion: volsync.backube/v1alpha1
       kind: ReplicationSource
