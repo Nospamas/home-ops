@@ -10,3 +10,10 @@ spec:
     schedule: "0 */12 * * *"
   repository:
     repository: volsync-maintenance-secret
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 4012
+    runAsGroup: 4014
+    fsGroup: 4014
+    fsGroupChangePolicy: OnRootMismatch
+    supplementalGroups: [4012, 4014]
