@@ -249,14 +249,6 @@ spec:
           identifier: *app
 
     persistence:
-      tmp-pihole:
-        type: emptyDir
-        medium: Memory
-        sizeLimit: 1Gi
-        advancedMounts:
-          *app :
-            init:
-              - path: /tmp-pihole
       config-map:
         type: configMap
         name: pihole-configmap

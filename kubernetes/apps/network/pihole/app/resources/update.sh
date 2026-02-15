@@ -3,19 +3,15 @@
 set -Eeuo pipefail
 
 # use dnscrypt-proxy, and add coredns in case there's no dns container up
-printf "nameserver 192.168.0.51\nnameserver 10.43.0.10" > /etc/resolv.conf
+printf "nameserver 192.168.2.253\nnameserver 10.43.0.10" > /etc/resolv.conf
 
-# Use fast temporary storage for SQLite operations
 if [ -f "/final/gravity.db" ]; then
-	echo "copying existing config to fast temporary storage"
-	cp -a /final/. /tmp-pihole/
+	echo "using symbol link for /etc/pihole, as /final is already setup"
 	rm /etc/pihole -rf
-	ln -s /tmp-pihole /etc/pihole
+	ln -s /final /etc/pihole
 elif [ ! -f "/etc/pihole/gravity.db" ]; then
-	# run gravity to cause db to get created on fast storage
-	echo "creating gravity db on fast temporary storage"
-	rm /etc/pihole -rf
-	ln -s /tmp-pihole /etc/pihole
+	# run gravity to cause db to get created
+	echo "creating gravity db"
 	pihole -g
 fi
 
@@ -32,13 +28,8 @@ echo "getting current allowlists"
 pihole-FTL sql /etc/pihole/gravity.db "SELECT address FROM adlist WHERE type=1" | sort > /tmp/current-allow.list
 
 to_remove=$(comm -23 /tmp/current-allow.list /tmp/allow.list)
-echo "Disabling lists not in the combined allow lists from db: $to_remove"
-if [ -n "$to_remove" ]; then
-	while IFS= read -r url; do
-		[ -z "$url" ] && continue
-		pihole-FTL sql /etc/pihole/gravity.db "UPDATE adlist SET enabled=0 WHERE address='$url' AND type=1;" || true
-	done <<< "$to_remove"
-fi
+echo "Removing lists not in the combined allow lists from db: $to_remove"
+echo "$to_remove" | xargs -I{} pihole-FTL sql /etc/pihole/gravity.db "SELECT id FROM adlist WHERE address='{}' AND type=1;" | xargs -I{} pihole-FTL sql /etc/pihole/gravity.db "DELETE FROM adlist_by_group WHERE adlist_id='{}'; DELETE FROM gravity WHERE adlist_id='{}'; DELETE FROM adlist WHERE id='{}'"
 
 to_add="$(comm -13 /tmp/current-allow.list /tmp/allow.list)"
 echo "Inserting new allow lists into db: $to_add"
@@ -63,23 +54,16 @@ https://tholinka.github.io/projects/hosts/hosts" | sort > /tmp/tholinka.list
 cat /tmp/firebog.list /tmp/tholinka.list | sort > /tmp/combined.list
 
 to_remove="$(comm -23 /tmp/current.list /tmp/combined.list)"
-echo "Disabling lists not in the combined lists from db: $to_remove"
+echo "Removing lists not in the combined lists from db: $to_remove"
+echo "$to_remove" | xargs -I{} pihole-FTL sql /etc/pihole/gravity.db "SELECT id FROM adlist WHERE address='{}' AND type=0;" | xargs -I{} pihole-FTL sql /etc/pihole/gravity.db "DELETE FROM adlist_by_group WHERE adlist_id='{}'; DELETE FROM gravity WHERE adlist_id='{}'; DELETE FROM adlist WHERE id='{}'"
 
-if [ -n "$to_remove" ]; then
-	while IFS= read -r url; do
-		[ -z "$url" ] && continue
-		pihole-FTL sql /etc/pihole/gravity.db "UPDATE adlist SET enabled=0 WHERE address='$url' AND type=0;" || true
-	done <<< "$to_remove"
-fi
+to_add="$(comm -13 /tmp/current.list /tmp/firebog.list)"
+echo "Inserting new firebog lists into db: $to_add"
+echo "$to_add" | xargs -I{} pihole-FTL sql /etc/pihole/gravity.db "INSERT INTO adlist (address, comment, enabled, type) VALUES ('{}', 'firebog, added `date +%F`', 1, 0);"
 
-to_add="$(comm -13 /tmp/current.list /tmp/combined.list)"
-echo "Inserting new lists into db: $to_add"
-if [ -n "$to_add" ]; then
-	while IFS= read -r url; do
-		[ -z "$url" ] && continue
-		pihole-FTL sql /etc/pihole/gravity.db "INSERT INTO adlist (address, comment, enabled, type) VALUES ('$url', 'added `date +%F`', 1, 0);" || true
-	done <<< "$to_add"
-fi
+to_add="$(comm -13 /tmp/current.list /tmp/tholinka.list)"
+echo "Inserting new tholinka.github.io lists into db: $to_add"
+echo "$to_add" | xargs -I{} pihole-FTL sql /etc/pihole/gravity.db "INSERT INTO adlist (address, comment, enabled, type) VALUES ('{}', 'tholinka.github.io, added `date +%F`', 1, 0);"
 
 echo;
 echo "Running pihole gravity"
@@ -110,8 +94,12 @@ pihole-FTL --config ntp.ipv6.active false
 pihole-FTL --config ntp.sync.active false
 
 echo;
-echo "copying config from fast temporary storage to persistent volume"
-cp -a /tmp-pihole/. /final/
+if [ -L /etc/pihole ]; then
+	echo "skipping copying of config, as /etc/pihole is a symlink"
+else
+	echo "copying config to pihole container config"
+	cp -a /etc/pihole/. /final
+fi
 
 # use only dnscrypt-proxy
 echo 'nameserver 192.168.2.253' > /etc/resolv.conf
