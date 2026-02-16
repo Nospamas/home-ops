@@ -38,7 +38,6 @@ spec:
                     name: '${APP}-secrets'
                     key: ATUIN_DB_URI
             args:
-              - server
               - start
             probes:
               liveness: &probes
