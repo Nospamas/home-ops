@@ -18,7 +18,7 @@ spec:
           - jobs
   matchConditions:
     - name: has-kopia-maint-job-name-prefix
-      expression: object.metadata.name.startsWith("kopia-maint-")
+      expression: has(object.metadata.name) && object.metadata.name.startsWith("kopia-maint-")
     - name: repository-volume-does-not-exist
       expression: >-
         !has(object.spec.template.spec.volumes) ||
@@ -56,3 +56,7 @@ metadata:
   name: kopia-maintenance-nfs
 spec:
   policyName: kopia-maintenance-nfs
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        kubernetes.io/metadata.name: storage
