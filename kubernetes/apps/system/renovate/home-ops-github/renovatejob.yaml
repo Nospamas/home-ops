@@ -14,7 +14,7 @@ spec:
       value: "true"
     # - name: RENOVATE_LOG_LEVEL
     #   value: debug
-  image: ghcr.io/renovatebot/renovate:43.73.2
+  image: ghcr.io/renovatebot/renovate:43.99.1
   parallelism: 5
   resources:
     requests:
