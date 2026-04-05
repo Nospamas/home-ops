@@ -1,4 +1,4 @@
-You should not modify the k8s cluster by directly applying, you may make code changes and reconcile them using flux.
+You should not modify the k8s cluster by directly applying, you may make code changes and reconcile them using flux. The user will commit changes on your behalf, just ask them to when you are ready for that stage.
 
 Namespaces are broader than common. You can find the following utilities in the following namespaces:
 
