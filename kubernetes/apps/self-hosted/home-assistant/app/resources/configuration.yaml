@@ -1,9 +1,6 @@
 # Loads default set of integrations. Do not remove.
 default_config:
 
-homeassistant:
-  internal_url: https://hass.${SECRET_DOMAIN}
-
 http:
   use_x_forwarded_for: true
   trusted_proxies:
