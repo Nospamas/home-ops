@@ -11,3 +11,16 @@ resources:
   - ./snapshot-controller/ks.yaml
   - ./volsync/ks.yaml
   - ./kopia/ks.yaml
+patches:
+  # privileged on namespace for Longhorn
+  - patch: |-
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: storage
+        labels:
+          pod-security.kubernetes.io/enforce: "privileged"
+          pod-security.kubernetes.io/audit: "privileged"
+          pod-security.kubernetes.io/warn: "privileged"
+    target:
+      kind: Namespace

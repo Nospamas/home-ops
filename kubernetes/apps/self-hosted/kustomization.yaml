@@ -9,5 +9,6 @@ components:
 resources:
   - ./homepage/ks.yaml
   - ./atuin/ks.yaml
+  - ./home-assistant/ks.yaml
   - ./immich/ks.yaml
   - ./syncthing/ks.yaml

@@ -6,6 +6,9 @@ metadata:
   name: dragonfly-${APP}
 spec:
   image: ghcr.io/dragonflydb/dragonfly:v1.37.2
+  # Disable buggy operator-generated NetworkPolicy (uses wrong label selectors)
+  # We use a custom NetworkPolicy instead (see networkpolicy.yaml)
+  networkPolicyEnabled: false
   replicas: 2
   env:
     - name: MAX_MEMORY

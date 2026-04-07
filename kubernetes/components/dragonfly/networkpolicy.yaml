@@ -1,0 +1,40 @@
+---
+# Custom NetworkPolicy to replace operator-generated one with correct selectors
+# The operator-generated policy uses incorrect labels (control-plane=controller-manager)
+# This policy allows the actual operator (app.kubernetes.io/controller=dragonfly) from database namespace
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: dragonfly-${APP}
+spec:
+  podSelector:
+    matchLabels:
+      app: dragonfly-${APP}
+      app.kubernetes.io/name: dragonfly
+      app.kubernetes.io/part-of: dragonfly
+  policyTypes:
+    - Ingress
+  ingress:
+    # Allow client port (6379) from any pod
+    - ports:
+        - protocol: TCP
+          port: 6379
+    # Allow admin port (9999) from operator pods in database namespace
+    - ports:
+        - protocol: TCP
+          port: 9999
+      from:
+        # Allow from dragonfly operator in database namespace
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: database
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/controller: dragonfly
+              app.kubernetes.io/name: dragonfly
+        # Allow from peer dragonfly pods (for replication)
+        - podSelector:
+            matchLabels:
+              app: dragonfly-${APP}
+              app.kubernetes.io/name: dragonfly
+              app.kubernetes.io/part-of: dragonfly
