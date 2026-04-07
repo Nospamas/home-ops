@@ -6,7 +6,8 @@ metadata:
   namespace: renovate-operator
 spec:
   schedule: 0 * * * *
-  discoveryFilter: nospamas/home-ops
+  discoveryFilters:
+    - nospamas/home-ops
   provider:
     name: github
   extraEnv:
