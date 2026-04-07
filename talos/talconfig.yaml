@@ -12,8 +12,8 @@ additionalApiServerCertSans: &sans
   - "k8s.cansk.net"
 additionalMachineCertSans: *sans
 
-clusterPodNets: ["10.42.0.0/16"]
-clusterSvcNets: ["10.43.0.0/16"]
+clusterPodNets: ["10.42.0.0/16", "fd00:10:42::/56"]
+clusterSvcNets: ["10.43.0.0/16", "fd00:10:43::/112"]
 
 # Disable built-in CNI to use Cilium
 cniConfig:
@@ -39,6 +39,7 @@ nodes:
       - interface: eno1
         addresses:
           - 192.168.0.1/16
+          - fd00:192:168::1/64
         routes:
           - network: 0.0.0.0/0
             gateway: 192.168.11.1
@@ -90,6 +91,7 @@ nodes:
       - interface: eno1
         addresses:
           - 192.168.0.2/16
+          - fd00:192:168::2/64
         routes:
           - network: 0.0.0.0/0
             gateway: 192.168.11.1
@@ -127,6 +129,7 @@ nodes:
       - interface: eno1
         addresses:
           - 192.168.0.3/16
+          - fd00:192:168::3/64
         routes:
           - network: 0.0.0.0/0
             gateway: 192.168.11.1
@@ -169,6 +172,7 @@ nodes:
       - interface: eth0
         addresses:
           - 192.168.0.4/16
+          - fd00:192:168::4/64
         routes:
           - network: 0.0.0.0/0
             gateway: 192.168.11.1
