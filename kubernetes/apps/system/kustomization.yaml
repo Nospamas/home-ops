@@ -15,3 +15,16 @@ resources:
   - ./tuppr/ks.yaml
   - ./renovate/ks.yaml
   - ./descheduler/ks.yaml
+patches:
+  # privileged on namespace for Intel GPU device plugin
+  - patch: |-
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: system
+        labels:
+          pod-security.kubernetes.io/enforce: "privileged"
+          pod-security.kubernetes.io/audit: "privileged"
+          pod-security.kubernetes.io/warn: "privileged"
+    target:
+      kind: Namespace
