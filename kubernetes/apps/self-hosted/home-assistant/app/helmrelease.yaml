@@ -106,6 +106,15 @@ spec:
           http:
             port: 8123
             primary: true
+      code:
+        controller: home-assistant
+        type: LoadBalancer
+        ipFamilyPolicy: SingleStack
+        ipFamilies:
+          - IPv4
+        annotations:
+          lbipam.cilium.io/ips: "192.168.2.199"
+        ports:
           code-server:
             port: 12321
 
@@ -139,7 +148,7 @@ spec:
             sectionName: https
         rules:
           - backendRefs:
-              - identifier: app
+              - identifier: code
                 port: code-server
 
     persistence:
