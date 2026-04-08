@@ -97,9 +97,11 @@ spec:
       app:
         controller: home-assistant
         type: LoadBalancer
-        ipFamilyPolicy: PreferDualStack
+        ipFamilyPolicy: SingleStack
+        ipFamilies:
+          - IPv4
         annotations:
-          lbipam.cilium.io/ips: "192.168.2.200,fd00:192:168:3::200/64"
+          lbipam.cilium.io/ips: "192.168.2.200"
         ports:
           http:
             port: 8123
