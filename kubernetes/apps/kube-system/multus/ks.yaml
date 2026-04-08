@@ -4,7 +4,7 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app multus
-  namespace: &namespace network
+  namespace: &namespace kube-system
 spec:
   targetNamespace: *namespace
   commonMetadata:
@@ -19,7 +19,7 @@ spec:
       kind: CustomResourceDefinition
       name: network-attachment-definitions.k8s.cni.cncf.io
   interval: 1h
-  path: ./kubernetes/apps/network/multus/app
+  path: ./kubernetes/apps/kube-system/multus/app
   prune: true
   retryInterval: 2m
   sourceRef:
@@ -40,9 +40,9 @@ spec:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: multus
-      namespace: network
+      namespace: kube-system
   interval: 1h
-  path: ./kubernetes/apps/network/multus/networks
+  path: ./kubernetes/apps/kube-system/multus/networks
   prune: true
   retryInterval: 2m
   sourceRef:
