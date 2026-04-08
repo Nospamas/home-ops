@@ -77,7 +77,7 @@ spec:
   dependsOn:
     - name: home-assistant-databases
     - name: multus
-      namespace: network
+      namespace: kube-system
   path: ./kubernetes/apps/self-hosted/home-assistant/app
   components:
     - ../../../../components/volsync

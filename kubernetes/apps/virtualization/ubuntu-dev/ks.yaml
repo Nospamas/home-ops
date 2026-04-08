@@ -10,7 +10,7 @@ spec:
     - name: kubevirt
     - name: cdi
     - name: multus
-      namespace: network
+      namespace: kube-system
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
