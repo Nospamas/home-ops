@@ -32,7 +32,7 @@ spec:
               [{
                 "name": "iot",
                 "namespace": "network",
-                "ips": ["192.168.3.200/16"]
+                "ips": ["192.168.3.200/16", "fd00:192:168:3::200/64"]
               }]
         containers:
           app:
@@ -97,8 +97,9 @@ spec:
       app:
         controller: home-assistant
         type: LoadBalancer
+        ipFamilyPolicy: PreferDualStack
         annotations:
-          lbipam.cilium.io/ips: "192.168.2.200"
+          lbipam.cilium.io/ips: "192.168.2.200,fd00:192:168:3::200/64"
         ports:
           http:
             port: 8123
