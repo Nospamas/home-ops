@@ -1,0 +1,94 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ipv6-test-pod-1
+  namespace: ipv6-test
+  labels:
+    app: ipv6-test
+    pod: pod-1
+spec:
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: app
+            operator: In
+            values:
+            - ipv6-test
+        topologyKey: kubernetes.io/hostname
+  containers:
+  - name: test
+    image: nicolaka/netshoot:latest
+    command: ["sleep", "infinity"]
+    securityContext:
+      capabilities:
+        add:
+        - NET_ADMIN
+        - NET_RAW
+  hostNetwork: false
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ipv6-test-pod-2
+  namespace: ipv6-test
+  labels:
+    app: ipv6-test
+    pod: pod-2
+spec:
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: app
+            operator: In
+            values:
+            - ipv6-test
+        topologyKey: kubernetes.io/hostname
+  containers:
+  - name: test
+    image: nicolaka/netshoot:latest
+    command: ["sleep", "infinity"]
+    securityContext:
+      capabilities:
+        add:
+        - NET_ADMIN
+        - NET_RAW
+  hostNetwork: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ipv6-test-svc-1
+  namespace: ipv6-test
+spec:
+  ipFamilyPolicy: PreferDualStack
+  ipFamilies:
+  - IPv6
+  - IPv4
+  selector:
+    pod: pod-1
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ipv6-test-svc-2
+  namespace: ipv6-test
+spec:
+  ipFamilyPolicy: PreferDualStack
+  ipFamilies:
+  - IPv6
+  - IPv4
+  selector:
+    pod: pod-2
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80

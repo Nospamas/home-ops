@@ -1,0 +1,7 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ipv6-test
+  labels:
+    pod-security.kubernetes.io/enforce: privileged
