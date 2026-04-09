@@ -11,7 +11,7 @@ spec:
   infrastructure:
     annotations:
       external-dns.alpha.kubernetes.io/hostname: *hostname
-      lbipam.cilium.io/ips: 192.168.2.251
+      lbipam.cilium.io/ips: "192.168.2.251, fd00:192:168:2::251"
   listeners:
     - name: http
       protocol: HTTP
@@ -42,7 +42,7 @@ spec:
   infrastructure:
     annotations:
       external-dns.alpha.kubernetes.io/hostname: *hostname
-      lbipam.cilium.io/ips: 192.168.2.252
+      lbipam.cilium.io/ips: "192.168.2.252, fd00:192:168:2::252"
   listeners:
     - name: http
       protocol: HTTP

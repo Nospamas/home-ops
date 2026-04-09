@@ -185,8 +185,12 @@ spec:
       *app :
         controller: *app
         type: LoadBalancer
+        ipFamilyPolicy: PreferDualStack
+        ipFamilies:
+          - IPv4
+          - IPv6
         annotations:
-          lbipam.cilium.io/ips: 192.168.2.254
+          lbipam.cilium.io/ips: "192.168.2.254, fd00:192:168:2::254"
         ports:
           dns-udp:
             port: 53
