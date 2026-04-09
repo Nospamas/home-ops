@@ -9,4 +9,3 @@ resources:
 - ./vm.yaml
 - ./service.yaml
 - ./home-network.yaml
-- ./cluster-network.yaml

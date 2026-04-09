@@ -12,15 +12,8 @@ spec:
       "name": "home-network",
       "plugins": [
         {
-          "type": "macvlan",
-          "master": "eno1",
-          "mode": "bridge",
-          "ipam": {
-            "type": "static"
-          }
-        },
-        {
-          "type": "sbr"
+          "type": "bridge",
+          "bridge": "br0"
         }
       ]
     }
