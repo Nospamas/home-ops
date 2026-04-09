@@ -36,7 +36,12 @@ nodes:
                 - siderolabs/util-linux-tools
     controlPlane: true
     networkInterfaces:
-      - interface: eno1
+      - interface: br0
+        bridge:
+          stp:
+            enabled: false
+          interfaces:
+            - eno1
         addresses:
           - 192.168.0.1/16
           - fd00:192:168::1/64
@@ -88,7 +93,12 @@ nodes:
     schematic: *schematic
     controlPlane: true
     networkInterfaces:
-      - interface: eno1
+      - interface: br0
+        bridge:
+          stp:
+            enabled: false
+          interfaces:
+            - eno1
         addresses:
           - 192.168.0.2/16
           - fd00:192:168::2/64
@@ -126,7 +136,12 @@ nodes:
     schematic: *schematic
     controlPlane: true
     networkInterfaces:
-      - interface: eno1
+      - interface: br0
+        bridge:
+          stp:
+            enabled: false
+          interfaces:
+            - eno1
         addresses:
           - 192.168.0.3/16
           - fd00:192:168::3/64
@@ -169,7 +184,12 @@ nodes:
       useUKI: true
     controlPlane: false
     networkInterfaces:
-      - interface: eth0
+      - interface: br0
+        bridge:
+          stp:
+            enabled: false
+          interfaces:
+            - eth0
         addresses:
           - 192.168.0.4/16
           - fd00:192:168::4/64

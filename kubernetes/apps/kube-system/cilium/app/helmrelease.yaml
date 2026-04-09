@@ -32,7 +32,7 @@ spec:
       automount:
         enabled: false
       hostRoot: /sys/fs/cgroup
-    devices: br+ eno+ eth+
+    devices: br+ eno+ enp+ eth+
     cni:
       exclusive: false
     dashboards:
