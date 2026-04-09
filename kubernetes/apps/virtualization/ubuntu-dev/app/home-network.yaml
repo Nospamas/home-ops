@@ -1,0 +1,26 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/k8s.cni.cncf.io/networkattachmentdefinition_v1.json
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+  name: home-network
+  namespace: virtualization
+spec:
+  config: |-
+    {
+      "cniVersion": "1.0.0",
+      "name": "home-network",
+      "plugins": [
+        {
+          "type": "macvlan",
+          "master": "eno1",
+          "mode": "bridge",
+          "ipam": {
+            "type": "static"
+          }
+        },
+        {
+          "type": "sbr"
+        }
+      ]
+    }

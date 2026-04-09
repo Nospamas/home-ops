@@ -11,6 +11,20 @@ spec:
         kubevirt.io/vm: ubuntu-dev
       annotations:
         kubevirt.io/allow-pod-bridge-network-live-migration: "true"
+        k8s.v1.cni.cncf.io/networks: |
+          [
+            {
+              "name": "home-network",
+              "namespace": "virtualization",
+              "ips": ["192.168.3.10/16", "fd00:192:168:3::10/48"],
+              "gateway": "192.168.11.1"
+            },
+            {
+              "name": "cluster-network",
+              "namespace": "virtualization",
+              "ips": ["10.42.100.10/16", "fd00:10:42::100/56"]
+            }
+          ]
     spec:
       evictionStrategy: LiveMigrateIfPossible
       domain:
@@ -29,8 +43,11 @@ spec:
             #     bus: virtio
           interfaces:
           - name: default
-            masquerade: {}
-            macAddress: "02:00:00:00:00:01"
+            bridge: {}
+          - name: home-network
+            bridge: {}
+          - name: cluster-network
+            bridge: {}
       accessCredentials:
         - userPassword:
             source:
@@ -49,6 +66,12 @@ spec:
       networks:
         - name: default
           pod: {}
+        - name: home-network
+          multus:
+            networkName: home-network
+        - name: cluster-network
+          multus:
+            networkName: cluster-network
       volumes:
         - name: ubuntu-dev
           persistentVolumeClaim:

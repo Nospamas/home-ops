@@ -8,3 +8,5 @@ resources:
 - ./ubuntu-image.yaml
 - ./vm.yaml
 - ./service.yaml
+- ./home-network.yaml
+- ./cluster-network.yaml
