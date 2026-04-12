@@ -13,7 +13,7 @@ spec:
       "plugins": [
         {
           "type": "macvlan",
-          "master": "eno1",
+          "master": "br0",
           "mode": "bridge",
           "ipam": {
             "type": "static"
