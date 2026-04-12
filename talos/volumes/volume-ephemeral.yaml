@@ -3,6 +3,6 @@ kind: VolumeConfig
 name: EPHEMERAL
 provisioning:
   diskSelector:
-    match: (disk.transport == 'nvme' || disk.transport == 'virtio') && system_disk
+    match: (disk.transport == 'nvme' || disk.transport == 'virtio' || disk.transport == 'usb') && system_disk
   maxSize: 100GB
   grow: false

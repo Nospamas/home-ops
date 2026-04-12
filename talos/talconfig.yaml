@@ -87,7 +87,7 @@ nodes:
   - hostname: "ctrl-02"
     ipAddress: "192.168.0.2"
     installDiskSelector:
-      serial: "7VR00F2Z"
+      transport: "usb"
     machineSpec:
       secureboot: false
     schematic: *schematic
@@ -99,6 +99,7 @@ nodes:
             enabled: false
           interfaces:
             - eno1
+            - enp1s0
         addresses:
           - 192.168.0.2/16
           - fd00:192:168::2/64
@@ -116,7 +117,7 @@ nodes:
       - name: host-nvme
         provisioning:
           diskSelector:
-            match: (disk.transport == 'nvme' || disk.transport == 'virtio') && system_disk
+            match: (disk.transport == 'nvme' || disk.transport == 'virtio' || disk.transport == 'usb') && system_disk
           minSize: 100Gi
           grow: true
     nodeLabels:
