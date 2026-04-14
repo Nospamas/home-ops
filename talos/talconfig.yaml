@@ -90,7 +90,19 @@ nodes:
       transport: "usb"
     machineSpec:
       secureboot: false
-    schematic: *schematic
+    schematic:
+      customization:
+        extraKernelArgs:
+          - amd_pstate=active
+          - cpufreq.default_governor=balance_performance
+        systemExtensions:
+            officialExtensions:
+                - siderolabs/amd-ucode
+                - siderolabs/amdgpu
+                - siderolabs/iscsi-tools
+                - siderolabs/util-linux-tools
+    patches:
+      - "@./patches/controller/ctrl-02-cpu-limit.yaml"
     controlPlane: true
     networkInterfaces:
       - interface: br0
