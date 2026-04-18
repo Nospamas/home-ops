@@ -70,6 +70,6 @@ spec:
       peers:
         - name: peer-64513-v4
           peerASN: 64513
-          peerAddress: 192.168.11.1
+          peerAddress: ${IP_GATEWAY}
           peerConfigRef:
             name: bgp-peer-config-v4

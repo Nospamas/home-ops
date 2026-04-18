@@ -180,7 +180,7 @@ spec:
             env:
               <<: *exporterEnv
               PIHOLE_PORT: 8080
-              PIHOLE_HOSTNAME: 192.168.0.51
+              PIHOLE_HOSTNAME: ${IP_DNS_SECONDARY}
 
     service:
       *app :

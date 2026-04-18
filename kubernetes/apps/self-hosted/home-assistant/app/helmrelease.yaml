@@ -32,7 +32,7 @@ spec:
               [{
                 "name": "iot",
                 "namespace": "network",
-                "ips": ["192.168.3.200/16", "fd00:192:168:3::200/64"]
+                "ips": ["${IP_IOT_HOME_ASSISTANT}/16", "${IP6_IOT_HOME_ASSISTANT}/64"]
               }]
         containers:
           app:
@@ -40,7 +40,7 @@ spec:
               repository: ghcr.io/home-operations/home-assistant
               tag: 2026.4.1@sha256:1000851ce4d5bf2f6790bfc8b9052daa2c33a84f92e0bad7d60e0a9333ff4dc2
             env:
-              TZ: ${TZ:=America/Vancouver}
+              TZ: ${CLUSTER_TIMEZONE}
               HOME_ASSISTANT__HACS_INSTALL: "true"
               HASS_RECORDER_DB_URL:
                 valueFrom:
@@ -76,7 +76,7 @@ spec:
               repository: ghcr.io/coder/code-server
               tag: 4.114.0@sha256:14e279b1e741d58d99b8afb1b24fa6cb0a433a3edf58bf271720e4d4ace225af
             env:
-              TZ: ${TZ:=America/Vancouver}
+              TZ: ${CLUSTER_TIMEZONE}
             args:
               - --auth
               - none
@@ -101,7 +101,7 @@ spec:
         ipFamilies:
           - IPv4
         annotations:
-          lbipam.cilium.io/ips: "192.168.2.200"
+          lbipam.cilium.io/ips: "${IP_SVC_HOME_ASSISTANT}, ${IP6_SVC_HOME_ASSISTANT}"
         ports:
           http:
             port: 8123
@@ -113,7 +113,7 @@ spec:
         ipFamilies:
           - IPv4
         annotations:
-          lbipam.cilium.io/ips: "192.168.2.199"
+          lbipam.cilium.io/ips: "${IP_SVC_HOME_ASSISTANT_CODE}, ${IP6_SVC_HOME_ASSISTANT_CODE}"
         ports:
           code-server:
             port: 12321

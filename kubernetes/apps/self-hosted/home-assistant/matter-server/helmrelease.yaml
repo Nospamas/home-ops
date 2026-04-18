@@ -39,7 +39,7 @@ spec:
               repository: ghcr.io/matter-js/python-matter-server
               tag: stable@sha256:e9f5fc49d2ac4fec1a91fb3eb1bd4555b9e39ea63db1d55b30a1ab53170c79ac
             env:
-              TZ: ${TZ:=America/Vancouver}
+              TZ: ${CLUSTER_TIMEZONE}
               MATTER_SERVER__INSTANCE_NAME: *app
               MATTER_SERVER__PORT: &port 5580
               MATTER_SERVER__LOG_LEVEL: info

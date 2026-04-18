@@ -22,7 +22,7 @@ spec:
             env:
               KOPIA_WEB_ENABLED: true
               KOPIA_WEB_PORT: &port 80
-              TZ: America/Vancouver
+              TZ: ${CLUSTER_TIMEZONE}
               KOPIA_PASSWORD:
                 valueFrom:
                   secretKeyRef:

@@ -41,7 +41,7 @@ spec:
               # renovate: datasource=docker depName=docker.io/filebrowser/filebrowser
               tag: v2.62.2@sha256:d01ee49248ef1d2a26616bc11c196b1768e2a2b67040ff085c8ffd35c037d123
             env:
-              TZ: ${TIMEZONE:=America/Vancouver}
+              TZ: ${CLUSTER_TIMEZONE}
               FB_DATABASE: /config/filebrowser.db
               FB_ROOT: /var/syncthing
               FB_LOG: stdout
