@@ -18,7 +18,7 @@ spec:
           [{
             "name": "iot",
             "namespace": "network",
-            "ips": ["192.168.3.201/16", "fd00:192:168:3::201/64"]
+            "ips": ["${IP_IOT_MATTER_SERVER}/16", "${IP6_IOT_MATTER_SERVER}/64"]
           }]
       hostUsers: false
       securityContext:
@@ -60,7 +60,7 @@ spec:
         controller: matter-server
         type: LoadBalancer
         annotations:
-          lbipam.cilium.io/ips: "192.168.3.202, fd00:192:168:3::202"
+          lbipam.cilium.io/ips: "${IP_SVC_MATTER_SERVER},${IP6_SVC_MATTER_SERVER}"
         ports:
           http:
             port: *port

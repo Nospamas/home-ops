@@ -84,7 +84,7 @@ spec:
         controller: syncthing
         type: LoadBalancer
         annotations:
-          lbipam.cilium.io/ips: "192.168.2.250"
+          lbipam.cilium.io/ips: "${IP_SVC_SYNCTHING},${IP6_SVC_SYNCTHING}"
         ports:
           listen:
             port: 22000
