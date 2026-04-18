@@ -48,6 +48,7 @@ spec:
         type: LoadBalancer
         annotations:
           lbipam.cilium.io/ips: "${IP_SVC_MOSQUITTO},${IP6_SVC_MOSQUITTO}"
+          external-dns.alpha.kubernetes.io/hostname: mqtt.${SECRET_DOMAIN}
         ports:
           http:
             port: 1883
