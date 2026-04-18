@@ -21,7 +21,7 @@ spec:
   # nodeName: kubernetes-ctrl-01  # Uncomment and set to target a specific node
   containers:
   - name: fsck
-    image: ubuntu:22.04
+    image: ubuntu:24.04
     command:
     - /bin/bash
     - -c
