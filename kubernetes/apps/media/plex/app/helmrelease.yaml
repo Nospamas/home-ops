@@ -34,7 +34,7 @@ spec:
               tag: 1.43.0.10492@sha256:8cb062f2b0660bd7811387e6c799da0ce5f18112078fe21485c11adcc83a9c1c
             env:
               TZ: "America/Vancouver"
-              PLEX_ADVERTISE_URL: https://{{ .Release.Name }}.${SECRET_DOMAIN},http://192.168.2.202:32400,http://plex.media.svc.cluster.local:32400
+              PLEX_ADVERTISE_URL: https://{{ .Release.Name }}.${SECRET_DOMAIN},http://$:32400,http://plex.media.svc.cluster.local:32400
               PLEX_CLAIM_TOKEN:
                 valueFrom:
                   secretKeyRef:
@@ -85,7 +85,7 @@ spec:
         controller: plex
         type: LoadBalancer
         annotations:
-          lbipam.cilium.io/ips: 192.168.2.202
+          lbipam.cilium.io/ips: "${IP_SVC_PLEX}, ${IP6_SVC_PLEX}"
         ports:
           http:
             port: *port

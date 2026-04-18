@@ -52,17 +52,17 @@ spec:
           - name: autopath
             parameters: '@kubernetes'
           - name: forward
-            parameters: internal. dns://192.168.2.254 dns://192.168.0.51 dns://192.168.11.1
+            parameters: internal. dns://${IP_DNS_PRIMARY} dns://${IP_DNS_SECONDARY} dns://${IP_GATEWAY}
             configBlock: |-
               policy sequential
               health_check 5s
           - name: forward
-            parameters: ${SECRET_DOMAIN}. dns://192.168.2.254 dns://192.168.0.51 dns://192.168.11.1
+            parameters: ${SECRET_DOMAIN}. dns://${IP_DNS_PRIMARY} dns://${IP_DNS_SECONDARY} dns://${IP_GATEWAY}
             configBlock: |-
               policy sequential
               health_check 5s
           - name: forward
-            parameters: . dns://192.168.2.254 dns://192.168.0.51 dns://192.168.11.1
+            parameters: . dns://${IP_DNS_PRIMARY} dns://${IP_DNS_SECONDARY} dns://${IP_GATEWAY}
             configBlock: |-
               tls_servername cloudflare-dns.com
               policy sequential

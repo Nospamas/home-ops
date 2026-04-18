@@ -3,7 +3,7 @@
 set -Eeuo pipefail
 
 # use dnscrypt-proxy, and add coredns in case there's no dns container up
-printf "nameserver 192.168.2.253\nnameserver 10.43.0.10" > /etc/resolv.conf
+printf "nameserver ${IP_SVC_DNSCRYPT}\nnameserver 10.43.0.10" > /etc/resolv.conf
 
 if [ -f "/final/gravity.db" ]; then
 	echo "using symbol link for /etc/pihole, as /final is already setup"
@@ -79,13 +79,13 @@ pihole-FTL --config dns.blockESNI false
 pihole-FTL --config dns.domain.name internal
 pihole-FTL --config webserver.domain "pihole.${SECRET_DOMAIN}"
 pihole-FTL --config dns.revServers '[
-	"true,192.168.0.0/24,192.168.11.1,server.local",
-	"true,192.168.3.0/24,192.168.11.1,computer.local"
+	"true,192.168.0.0/24,${IP_GATEWAY},server.local",
+	"true,192.168.3.0/24,${IP_GATEWAY},computer.local"
 	]'
 pihole-FTL --config dns.reply.host.force4 true
-pihole-FTL --config dns.reply.host.IPv4 192.168.2.254
+pihole-FTL --config dns.reply.host.IPv4 ${IP_DNS_PRIMARY}
 pihole-FTL --config dns.reply.blocking.force4 true
-pihole-FTL --config dns.reply.blocking.IPv4 192.168.2.254
+pihole-FTL --config dns.reply.blocking.IPv4 ${IP_DNS_PRIMARY}
 pihole-FTL --config misc.nice -999
 pihole-FTL --config misc.check.load false
 pihole-FTL --config dns.ignoreLocalhost true
@@ -102,4 +102,4 @@ else
 fi
 
 # use only dnscrypt-proxy
-echo 'nameserver 192.168.2.253' > /etc/resolv.conf
+echo "nameserver ${IP_SVC_DNSCRYPT}" > /etc/resolv.conf
