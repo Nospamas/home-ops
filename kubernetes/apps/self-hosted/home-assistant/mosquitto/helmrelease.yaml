@@ -10,11 +10,11 @@ spec:
   interval: 1h
   values:
     controllers:
-      mosquitto:
+      *app :
         annotations:
           reloader.stakater.com/auto: "true"
         containers:
-          *app :
+          app:
             image:
               repository: public.ecr.aws/docker/library/eclipse-mosquitto
               tag: 2.0.22@sha256:914f529386804c8278a4e581526b9be5e1604df44b30daabc70aa97dcefe5268
