@@ -11,12 +11,15 @@ recorder:
   db_url: !env_var HASS_RECORDER_DB_URL
 
 openid:
-    client_id: ${HOME_ASSISTANT_AUTHENTIK_CLIENT_ID}
-    client_secret: ${HOME_ASSISTANT_AUTHENTIK_CLIENT_SECRET}
-    configure_url: "https://auth.${SECRET_DOMAIN}/application/o/home-assistant/.well-known/openid-configuration"
-    scope: "openid profile email"
-    username_field: "preferred_username"
-    block_login: false
+  client_id: ${HOME_ASSISTANT_AUTHENTIK_CLIENT_ID}
+  client_secret: ${HOME_ASSISTANT_AUTHENTIK_CLIENT_SECRET}
+  configure_url: "https://auth.${SECRET_DOMAIN}/application/o/home-assistant/.well-known/openid-configuration"
+  scope: "openid profile email"
+  username_field: "preferred_username"
+  block_login: false
+  create_user: true
+  use_pkce: true
+  validate_tls: true
 
 wake_on_lan:
 
