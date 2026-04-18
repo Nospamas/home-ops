@@ -4,6 +4,8 @@ metadata:
   name: cdi-uploadproxy-loadbalancer
   labels:
     cdi.kubevirt.io: "cdi-uploadproxy"
+  annotations:
+    lbipam.cilium.io/ips: "${IP_SVC_CDI_UPLOADPROXY}, ${IP6_SVC_CDI_UPLOADPROXY}"
 spec:
   type: LoadBalancer
   ports:
