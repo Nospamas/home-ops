@@ -1,0 +1,38 @@
+---
+# Privileged debug pod for running fsck on Longhorn volumes
+# Usage:
+# 1. If you need to target a specific node, add nodeName to spec before applying:
+#    nodeName: kubernetes-ctrl-01
+# 2. Apply this manifest: kubectl apply -f fsck-repair.yaml
+# 3. Exec into the pod: kubectl exec -it fsck-repair -n storage -- bash
+# 4. Find the volume device in /host/dev/longhorn/
+# 5. Run fsck: fsck -y /host/dev/longhorn/pvc-XXXXX
+# 6. Delete the pod when done: kubectl delete -f fsck-repair.yaml
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fsck-repair
+  namespace: storage
+spec:
+  hostNetwork: true
+  hostPID: true
+  hostIPC: true
+  # nodeName: kubernetes-ctrl-01  # Uncomment and set to target a specific node
+  containers:
+  - name: fsck
+    image: ubuntu:22.04
+    command:
+    - /bin/bash
+    - -c
+    - |
+      apt-get update && apt-get install -y e2fsprogs xfsprogs btrfs-progs && sleep infinity
+    securityContext:
+      privileged: true
+    volumeMounts:
+    - name: host
+      mountPath: /host
+  volumes:
+  - name: host
+    hostPath:
+      path: /
