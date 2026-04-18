@@ -2,10 +2,10 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    lbipam.cilium.io/ips: ${IP_SVC_UBUNTU_DEV},${IP6_SVC_UBUNTU_DEV}
     kubevirt.io/vm: ubuntu-dev
   name: ubuntu-dev
   annotations:
+    lbipam.cilium.io/ips: "${IP_SVC_UBUNTU_DEV}, ${IP6_SVC_UBUNTU_DEV}"
     external-dns.alpha.kubernetes.io/hostname: ubuntu-dev.${SECRET_DOMAIN}
 spec:
   ipFamilyPolicy: PreferDualStack
