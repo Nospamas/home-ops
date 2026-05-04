@@ -204,7 +204,8 @@ nodes:
           stp:
             enabled: false
           interfaces:
-            - eth0
+            - eth%d
+            - ens%d
         addresses:
           - 192.168.0.4/16
           - fd00:192:168::4/64
