@@ -8,6 +8,12 @@ spec:
   enabled: true
   trigger:
     schedule: "0 */12 * * *"
+  moverVolumes:
+    - mountPath: repository
+      volumeSource:
+        nfs:
+          path: /mnt/Storage/backups/kopia/repository
+          server: truenas.server.internal
   repository:
     repository: volsync-maintenance-secret
   podSecurityContext:

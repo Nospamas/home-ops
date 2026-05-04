@@ -7,7 +7,7 @@ VOLSYNC_STORAGECLASS: (default=longhorn-fast)
 
 VOLSYNC_CACHE_ACCESSMODES: (default=5gi)
 VOLSYNC_CACHE_CAPACITY: (default=5gi)
-VOLSYNC_CACHE_SNAPSHOTCLASS: (default=openebs-hostpath)
+VOLSYNC_CACHE_STORAGECLASS: (default=openebs-hostpath)
 
 VOLSYNC_PUID: (default=4012)
 VOLSYNC_PGID: (default=4014)

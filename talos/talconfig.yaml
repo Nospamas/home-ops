@@ -52,10 +52,6 @@ nodes:
             metric: 1024
         vip:
           ip: *talosControlplaneVip
-    extensionServices:
-      - name: tailscale
-        environment:
-          - TS_AUTHKEY=${tsAuthCtrl01}
     userVolumes: &defaultUserVolumes
       - name: host-nvme
         provisioning:
@@ -122,10 +118,6 @@ nodes:
             metric: 1024
         vip:
           ip: *talosControlplaneVip
-    extensionServices:
-      - name: tailscale
-        environment:
-          - TS_AUTHKEY=${tsAuthCtrl02}
     userVolumes: &defaultUserVolumes
       - name: host-nvme
         provisioning:
@@ -166,10 +158,6 @@ nodes:
             metric: 1024
         vip:
           ip: *talosControlplaneVip
-    extensionServices:
-      - name: tailscale
-        environment:
-          - TS_AUTHKEY=${tsAuthCtrl03}
     userVolumes: *defaultUserVolumes
     nodeLabels:
       longhorn-manager: "manager"
