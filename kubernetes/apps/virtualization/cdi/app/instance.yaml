@@ -3,6 +3,16 @@ kind: CDI
 metadata:
   name: cdi
 spec:
+  certConfig:
+    ca:
+      duration: 2160h  # 90 days
+      renewBefore: 720h  # 30 days before expiry
+    server:
+      duration: 2160h  # 90 days
+      renewBefore: 720h  # 30 days before expiry
+    client:
+      duration: 2160h  # 90 days
+      renewBefore: 720h  # 30 days before expiry
   config:
     scratchSpaceStorageClass: openebs-hostpath
     podResourceRequirements:
