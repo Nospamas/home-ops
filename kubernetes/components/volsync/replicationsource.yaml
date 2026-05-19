@@ -22,7 +22,7 @@ spec:
       runAsGroup: ${VOLSYNC_PGID:=4014}
       fsGroup: ${VOLSYNC_PGID:=4014}
     moverVolumes:
-      - mountPath: /repository
+      - mountPath: repository
         volumeSource:
           nfs:
             path: /mnt/Storage/backups/kopia/repository
