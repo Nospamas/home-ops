@@ -168,6 +168,8 @@ nodes:
       node.longhorn.io/default-disks-config: *longhorn-node-config
     nodeTaints: {}
   - hostname: "work-01"
+    patches:
+      - "@./patches/worker/link-alias.yaml"
     schematic:
       customization:
         systemExtensions:
@@ -192,8 +194,7 @@ nodes:
           stp:
             enabled: false
           interfaces:
-            - eth%d
-            - ens%d
+            - vmnic
         addresses:
           - 192.168.0.4/16
           - fd00:192:168::4/64

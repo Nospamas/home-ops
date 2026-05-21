@@ -1,0 +1,6 @@
+---
+apiVersion: v1alpha1
+kind: LinkAliasConfig
+name: vmnic
+selector:
+  match: link.type == 1 && link.kind == ""
