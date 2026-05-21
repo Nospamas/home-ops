@@ -1,0 +1,18 @@
+This is a kubernetes Flux based git-ops repo the cluster an be inspected via `kubectl`.
+
+It uses Talos as the operating system which can be configured via the `talosctl` command line.
+
+Talos configuration information for the nodes is stored in `talos/` and is compiled using `talhelper` into the `talos/clusterconfig/kubenetes-<node-name>.yaml` files.
+
+You should not modify the k8s cluster by directly applying, you may make code changes and reconcile them using flux. The user will commit changes on your behalf, just ask them to review when you are ready for that stage.
+
+Namespaces are broader than common. You can find the following utilities in the following namespaces:
+
+the `storage` namespace contains:
+- Longhorn
+- Volsync
+
+A number of components are loaded from `/kubernets/components/*` and are loaded as part of the flux kustomization, these
+include but are not limited to; volsync, cnpg instances, external-auth and certain common structures.
+
+Don't use force deletions on the cluster unless you've tried normally first.
