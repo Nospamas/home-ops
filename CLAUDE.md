@@ -1,18 +1,11 @@
-This is a kubernetes Flux based git-ops repo the cluster an be inspected via `kubectl`.
+This is a Kubernetes Flux GitOps repo. Inspect the cluster via `kubectl`, configure Talos nodes via `talosctl`.
 
-It uses Talos as the operating system which can be configured via the `talosctl` command line.
+Don't modify the cluster by directly applying — make code changes and reconcile via Flux. The user commits changes; ask them to review before that stage.
 
-Talos configuration information for the nodes is stored in `talos/` and is compiled using `talhelper` into the `talos/clusterconfig/kubenetes-<node-name>.yaml` files.
+Talos node configs live in `talos/` and are compiled with `talhelper` into `talos/clusterconfig/`. `talhelper genconfig` requires the SOPS age key — must be run by the user.
 
-You should not modify the k8s cluster by directly applying, you may make code changes and reconcile them using flux. The user will commit changes on your behalf, just ask them to review when you are ready for that stage.
+Namespaces: `storage` contains Longhorn and Volsync. Components shared across apps are in `kubernetes/components/`.
 
-Namespaces are broader than common. You can find the following utilities in the following namespaces:
+Don't use force deletions unless normal deletion has been tried first.
 
-the `storage` namespace contains:
-- Longhorn
-- Volsync
-
-A number of components are loaded from `/kubernets/components/*` and are loaded as part of the flux kustomization, these
-include but are not limited to; volsync, cnpg instances, external-auth and certain common structures.
-
-Don't use force deletions on the cluster unless you've tried normally first.
+Extended notes on specific systems are in `.claude/memory/` with an index summary at `.claude/memory/MEMORY.md` — load relevant files as needed.
