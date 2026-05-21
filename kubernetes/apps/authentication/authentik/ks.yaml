@@ -49,7 +49,7 @@ spec:
       kind: *postgresKind
       failed: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'False')
       current: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'True')
-  timeout: 5m
+  timeout: 15m
   decryption:
     provider: sops
     secretRef:

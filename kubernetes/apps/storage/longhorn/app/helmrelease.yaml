@@ -39,6 +39,7 @@ spec:
       defaultReplicaCount: 3
       guaranteedEngineManagerCPU: 20
       guaranteedReplicaManagerCPU: 20
+      nodeDrainPolicy: allow-if-replica-is-stopped
       nodeDownPodDeletionPolicy: delete-both-statefulset-and-deployment-pod
       orphanAutoDeletion: true
       replicaAutoBalance: true

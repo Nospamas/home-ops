@@ -15,3 +15,10 @@ spec:
       kind: ReplicationSource
       expr: |-
         status.conditions.filter(c, c.type == "Synchronizing").all(c, c.status == "False")
+    - apiVersion: longhorn.io/v1beta2
+      kind: Volume
+      namespace: storage
+      description: All Longhorn volumes are healthy or detached
+      timeout: 30m
+      expr: |-
+        object.status.robustness == "healthy" || object.status.robustness == "unknown"
