@@ -13,6 +13,7 @@ spec:
   healthChecks:
     - apiVersion: volsync.backube/v1alpha1
       kind: ReplicationSource
+      timeout: 20m
       expr: |-
         status.conditions.filter(c, c.type == "Synchronizing").all(c, c.status == "False")
     - apiVersion: longhorn.io/v1beta2
