@@ -27,6 +27,13 @@ spec:
       memory: ${DRAGONFLY_REQUESTS_MEMORY:-${DRAGONFLY_LIMITS_MEMORY:=512Mi}}
     limits:
       memory: ${DRAGONFLY_LIMITS_MEMORY:=512Mi}
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: Exists
   topologySpreadConstraints:
     - maxSkew: 1
       topologyKey: 'kubernetes.io/hostname'
