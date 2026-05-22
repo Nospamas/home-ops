@@ -23,6 +23,6 @@ openid:
 
 wake_on_lan:
 
-automation: []
+automation: !include automations.yaml
 script: []
 scene: []
