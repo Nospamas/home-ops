@@ -22,7 +22,8 @@ echo "Prepping allowlists"
 echo "https://raw.githubusercontent.com/anudeepND/whitelist/master/domains/whitelist.txt
 https://raw.githubusercontent.com/anudeepND/whitelist/master/domains/optional-list.txt
 https://raw.githubusercontent.com/anudeepND/whitelist/master/domains/referral-sites.txt
-https://tholinka.github.io/projects/hosts/allowlist" | sort > /tmp/allow.list
+https://tholinka.github.io/projects/hosts/allowlist
+https://nospamas.github.io/projects/hosts/allowlist" | sort > /tmp/allow.list
 
 echo "getting current allowlists"
 pihole-FTL sql /etc/pihole/gravity.db "SELECT address FROM adlist WHERE type=1" | sort > /tmp/current-allow.list
