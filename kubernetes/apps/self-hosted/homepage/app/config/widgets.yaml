@@ -27,7 +27,7 @@
     label: Home
     latitude: '{{HOMEPAGE_VAR_LONGITUDE}}'
     longitude: '{{HOMEPAGE_VAR_LATITUDE}}'
-    timezone: '${TIMEZONE}'
+    timezone: '${CLUSTER_TIMEZONE}'
     units: metric
     cache: 5
 - datetime:
