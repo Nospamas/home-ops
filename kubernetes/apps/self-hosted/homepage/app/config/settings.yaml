@@ -4,6 +4,11 @@ favicon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/homepage.png
 theme: dark
 color: slate
 headerStyle: clean
+background:
+  image: https://photos.xgy.im/api/assets/de783b34-bbe1-4b40-82a0-4491566951f2/thumbnail?size=fullsize&c=pAcKHYR4eId%2Fd4iEiLd3hYmAtQkY&edited=true
+  # Darken + slight blur so widgets/text stay readable on the dark theme.
+  brightness: 50
+  blur: sm
 layout:
   Media:
     style: row
