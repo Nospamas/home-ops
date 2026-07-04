@@ -1,0 +1,52 @@
+# yaml-language-server: $schema=https://goauthentik.io/blueprints/schema.json
+version: 1
+metadata:
+  name: ldap
+  labels:
+    blueprints.goauthentik.io/instance: ldap
+entries:
+  # LDAP provider served by the dedicated LDAP outpost (ak-outpost-ldap),
+  # exposed as LDAPS on ldap.${SECRET_DOMAIN} via the envoy-internal TCPRoute.
+  - model: authentik_providers_ldap.ldapprovider
+    id: ldap-provider
+    identifiers:
+      name: Provider for LDAP
+    attrs:
+      name: Provider for LDAP
+      base_dn: DC=ldap,DC=xgy,DC=im
+      bind_mode: direct
+      search_mode: direct
+      mfa_support: true
+      uid_start_number: 4000
+      gid_start_number: 4000
+      tls_server_name: ldap.${SECRET_DOMAIN}
+      # The `ldap` keypair is the LetsEncrypt cert copied in by the server/worker
+      # cert-rename initContainers; managed by cert-manager
+      certificate:
+        !Find [authentik_crypto.certificatekeypair, [name, ldap]]
+      authorization_flow:
+        !Find [authentik_flows.flow, [slug, ldap-authentication-flow]]
+      invalidation_flow:
+        !Find [authentik_flows.flow, [slug, default-invalidation-flow]]
+  - model: authentik_core.application
+    identifiers:
+      slug: ldap
+    attrs:
+      name: LDAP
+      slug: ldap
+      group: Internal,NAS
+      provider: !KeyOf ldap-provider
+  # Dedicated LDAP outpost (deployed by authentik's k8s controller as
+  # ak-outpost-ldap). the outpost's config is left at authentik defaults
+  # (LDAPS is exposed via the envoy-internal TCPRoute in the HelmRelease, not
+  # via ingress).
+  - model: authentik_outposts.outpost
+    identifiers:
+      name: LDAP
+    attrs:
+      name: LDAP
+      type: ldap
+      service_connection:
+        !Find [authentik_outposts.kubernetesserviceconnection, [name, Local Kubernetes Cluster]]
+      providers:
+        - !KeyOf ldap-provider

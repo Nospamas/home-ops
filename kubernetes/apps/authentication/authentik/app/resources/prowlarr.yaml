@@ -1,29 +1,30 @@
 # yaml-language-server: $schema=https://goauthentik.io/blueprints/schema.json
 version: 1
 metadata:
-  name: code-server
+  name: prowlarr
   labels:
-    blueprints.goauthentik.io/instance: code-server
+    blueprints.goauthentik.io/instance: prowlarr
 entries:
   # Proxy provider (forward auth, single application) fronted by the embedded
-  # outpost + Envoy SecurityPolicy on code.${SECRET_DOMAIN}.
+  # outpost + Envoy SecurityPolicy on prowlarr.${SECRET_DOMAIN}.
   - model: authentik_providers_proxy.proxyprovider
-    id: code-server-provider
+    id: prowlarr-provider
     identifiers:
-      name: code-server
+      name: Provider for prowlarr
     attrs:
-      name: code-server
+      name: Provider for prowlarr
       mode: forward_single
-      external_host: https://code.${SECRET_DOMAIN}
+      external_host: https://prowlarr.${SECRET_DOMAIN}
       authorization_flow:
         !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
       invalidation_flow:
         !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
   - model: authentik_core.application
     identifiers:
-      slug: code-server
+      slug: prowlarr
     attrs:
-      name: code-server
-      slug: code-server
-      group: self-hosted
-      provider: !KeyOf code-server-provider
+      name: prowlarr
+      slug: prowlarr
+      group: arr-stack
+      provider: !KeyOf prowlarr-provider
+      meta_launch_url: https://prowlarr.${SECRET_DOMAIN}

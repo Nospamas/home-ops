@@ -11,5 +11,15 @@ configMapGenerator:
   - name: authentik-blueprints
     files:
       - ./resources/code-server.yaml
+      - ./resources/bazarr.yaml
+      - ./resources/prowlarr.yaml
+      - ./resources/radarr.yaml
+      - ./resources/sonarr.yaml
+      - ./resources/homepage.yaml
+      - ./resources/grafana.yaml
+      - ./resources/home-assistant.yaml
+      - ./resources/immich.yaml
+      - ./resources/ldap.yaml
+      - ./resources/embedded-outpost.yaml
 generatorOptions:
   disableNameSuffixHash: true

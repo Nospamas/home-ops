@@ -1,29 +1,32 @@
 # yaml-language-server: $schema=https://goauthentik.io/blueprints/schema.json
 version: 1
 metadata:
-  name: code-server
+  name: bazarr
   labels:
-    blueprints.goauthentik.io/instance: code-server
+    blueprints.goauthentik.io/instance: bazarr
 entries:
   # Proxy provider (forward auth, single application) fronted by the embedded
-  # outpost + Envoy SecurityPolicy on code.${SECRET_DOMAIN}.
+  # outpost + Envoy SecurityPolicy on bazarr.${SECRET_DOMAIN}.
   - model: authentik_providers_proxy.proxyprovider
-    id: code-server-provider
+    id: bazarr-provider
     identifiers:
-      name: code-server
+      name: Provider for bazarr
     attrs:
-      name: code-server
+      name: Provider for bazarr
       mode: forward_single
-      external_host: https://code.${SECRET_DOMAIN}
+      external_host: https://bazarr.${SECRET_DOMAIN}
       authorization_flow:
         !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
       invalidation_flow:
         !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
   - model: authentik_core.application
     identifiers:
-      slug: code-server
+      slug: bazarr
     attrs:
-      name: code-server
-      slug: code-server
-      group: self-hosted
-      provider: !KeyOf code-server-provider
+      name: bazarr
+      slug: bazarr
+      group: arr-stack
+      provider: !KeyOf bazarr-provider
+      meta_launch_url: https://bazarr.${SECRET_DOMAIN}
+  # This provider is bound to the "authentik Embedded Outpost" by the
+  # embedded-outpost.yaml blueprint (the single source of truth for that list).
