@@ -33,6 +33,6 @@
 - datetime:
     text_size: x1
     format:
-      dateStyle: long
+      dateStyle: short
       timeStyle: short
-      hour12: true
+      hourCycle: h23

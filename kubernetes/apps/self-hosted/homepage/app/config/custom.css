@@ -1,0 +1,20 @@
+/* Custom styling for Homepage — auto-loaded from /app/config/custom.css */
+
+/* Add breathing room between the info widgets in the header row.
+   #information-widgets uses justify-between; gap enforces a minimum
+   spacing between each widget cluster. */
+#information-widgets {
+  gap: 1.5rem;
+}
+
+/* The right-hand cluster (weather + datetime) ships with a tight
+   gap-x-2 (0.5rem); widen it. ID specificity beats the Tailwind class. */
+#information-widgets-right {
+  gap: 1.5rem;
+}
+
+/* A little horizontal padding around each individual widget. */
+.widget-container {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
