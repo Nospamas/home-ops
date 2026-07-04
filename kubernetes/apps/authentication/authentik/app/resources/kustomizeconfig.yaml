@@ -1,9 +1,0 @@
----
-# Propagate the hashed ConfigMap name into the HelmRelease's blueprint mount
-# list so editing a blueprint rolls the authentik worker.
-nameReference:
-  - kind: ConfigMap
-    version: v1
-    fieldSpecs:
-      - path: spec/values/blueprints/configMaps
-        kind: HelmRelease
