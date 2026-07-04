@@ -34,7 +34,7 @@ metadata:
     gethomepage.dev/href: "https://hyperion.${SECRET_DOMAIN}"
     gethomepage.dev/group: Home
     gethomepage.dev/name: Hyperion
-    gethomepage.dev/icon: hyperion.svg
+    gethomepage.dev/icon: https://hyperion.xgy.im/favicon.png
     gethomepage.dev/enabled: 'true'
     gethomepage.dev/pod-selector: ""
 spec:
