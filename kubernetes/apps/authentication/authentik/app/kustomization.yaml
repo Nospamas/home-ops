@@ -7,3 +7,9 @@ resources:
   - ./helmrelease.yaml
   - ./certificate.yaml
   - ./referencegrant.yaml
+configMapGenerator:
+  - name: authentik-blueprints
+    files:
+      - ./resources/code-server.yaml
+configurations:
+  - ./resources/kustomizeconfig.yaml

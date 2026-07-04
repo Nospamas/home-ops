@@ -1,0 +1,31 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app code-server
+  namespace: &namespace self-hosted
+spec:
+  targetNamespace: *namespace
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  interval: 1h
+  components:
+    - ../../../../components/ext-auth
+    - ../../../../components/volsync
+  path: ./kubernetes/apps/self-hosted/code-server/app
+  postBuild:
+    substitute:
+      APP: *app
+      VOLSYNC_CAPACITY: 10Gi
+      VOLSYNC_ACCESSMODES: ReadWriteOnce
+      VOLSYNC_STORAGECLASS: longhorn-fast
+      VOLSYNC_SNAPSHOTCLASS: longhorn
+      VOLSYNC_SCHEDULE: "0 0/4 * * *"
+      VOLSYNC_HOURLY: "6"
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system

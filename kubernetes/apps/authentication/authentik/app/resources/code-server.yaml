@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=https://goauthentik.io/blueprints/schema.json
+version: 1
+metadata:
+  name: code-server
+  labels:
+    blueprints.goauthentik.io/instance: code-server
+entries:
+  # Proxy provider (forward auth, single application) fronted by the embedded
+  # outpost + Envoy SecurityPolicy on code.${SECRET_DOMAIN}.
+  - model: authentik_providers_proxy.proxyprovider
+    id: code-server-provider
+    identifiers:
+      name: code-server
+    attrs:
+      name: code-server
+      mode: forward_single
+      external_host: https://code.${SECRET_DOMAIN}
+      authorization_flow:
+        !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
+      invalidation_flow:
+        !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
+  - model: authentik_core.application
+    identifiers:
+      slug: code-server
+    attrs:
+      name: code-server
+      slug: code-server
+      provider: !KeyOf code-server-provider
+  # NOTE: assigning this provider to the "authentik Embedded Outpost" is
+  # intentionally NOT managed here — a blueprint would replace the whole
+  # providers list and clobber the UI-managed apps. Add it via the UI:
+  # Applications -> Outposts -> edit embedded -> add code-server -> Update.

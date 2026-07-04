@@ -24,6 +24,9 @@ spec:
       retries: 2
   values:
     # if I ever lose the db, my setup is based heavily on https://github.com/joryirving/home-ops/tree/77478606352bfb43e6c1c5fcf0b5fa134d007095/terraform/authentik
+    blueprints:
+      configMaps:
+        - authentik-blueprints
     global:
       podAnnotations:
         secret.reloader.stakater.com/reload: &secret authentik-secret
