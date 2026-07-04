@@ -25,6 +25,7 @@ entries:
     attrs:
       name: code-server
       slug: code-server
+      group: self-hosted
       provider: !KeyOf code-server-provider
   # NOTE: assigning this provider to the "authentik Embedded Outpost" is
   # intentionally NOT managed here — a blueprint would replace the whole
