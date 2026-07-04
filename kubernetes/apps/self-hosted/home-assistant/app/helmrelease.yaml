@@ -130,15 +130,16 @@ spec:
           - backendRefs:
               - identifier: app
                 port: http
-        # annotations:
-        #   gethomepage.dev/enabled: "true"
-        #   gethomepage.dev/name: Home Assistant
-        #   gethomepage.dev/group: Self Hosted
-        #   gethomepage.dev/icon: home-assistant.svg
-        #   gethomepage.dev/description: Home Automation
-        #   gethomepage.dev/widget.type: homeassistant
-        #   gethomepage.dev/widget.url: http://home-assistant.self-hosted:8123
-        #   gethomepage.dev/widget.key: "{{HOMEPAGE_VAR_HOMEASSISTANT_KEY}}"
+        annotations:
+          gethomepage.dev/enabled: 'true'
+          gethomepage.dev/name: Home Assistant
+          gethomepage.dev/group: Home
+          gethomepage.dev/icon: home-assistant.svg
+          gethomepage.dev/description: Home Automation
+          gethomepage.dev/widget.type: homeassistant
+          gethomepage.dev/widget.url: http://home-assistant-app.self-hosted.svc.cluster.local:8123
+          gethomepage.dev/widget.key: '{{ "{{HOMEPAGE_VAR_HOMEASSISTANT_TOKEN}}" }}'
+          gethomepage.dev/pod-selector: app.kubernetes.io/name=home-assistant
       code-server:
         hostnames:
           - hass-code.${SECRET_DOMAIN}
