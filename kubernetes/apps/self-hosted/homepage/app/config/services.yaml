@@ -59,6 +59,16 @@
           type: sonarr
           url: http://sonarr.media.svc.cluster.local.:80
           key: '{{HOMEPAGE_VAR_SONARR_TOKEN}}'
+    - Tautulli:
+        href: https://tautulli.${SECRET_DOMAIN}
+        icon: tautulli.svg
+        #description: Plex Monitoring
+        app: tautulli
+        namespace: media
+        widget:
+          type: tautulli
+          url: http://tautulli.media.svc.cluster.local.:80
+          key: '{{HOMEPAGE_VAR_TAUTULLI_TOKEN}}'
 - Infrastructure:
     - Unifi:
         icon: unifi.svg
