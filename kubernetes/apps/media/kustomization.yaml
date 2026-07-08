@@ -13,3 +13,4 @@ resources:
   - ./prowlarr/ks.yaml
   - ./sonarr/ks.yaml
   - ./bazarr/ks.yaml
+  - ./unpackerr/ks.yaml
