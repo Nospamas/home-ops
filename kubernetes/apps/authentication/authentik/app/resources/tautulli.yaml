@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=https://goauthentik.io/blueprints/schema.json
+version: 1
+metadata:
+  name: tautulli
+  labels:
+    blueprints.goauthentik.io/instance: tautulli
+entries:
+  # Proxy provider (forward auth, single application) fronted by the embedded
+  # outpost + Envoy SecurityPolicy on tautulli.${SECRET_DOMAIN}.
+  - model: authentik_providers_proxy.proxyprovider
+    id: tautulli-provider
+    identifiers:
+      name: Provider for tautulli
+    attrs:
+      name: Provider for tautulli
+      mode: forward_single
+      external_host: https://tautulli.${SECRET_DOMAIN}
+      authorization_flow:
+        !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
+      invalidation_flow:
+        !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
+  - model: authentik_core.application
+    identifiers:
+      slug: tautulli
+    attrs:
+      name: tautulli
+      slug: tautulli
+      group: arr-stack
+      provider: !KeyOf tautulli-provider
+      meta_launch_url: https://tautulli.${SECRET_DOMAIN}
+  # This provider is bound to the "authentik Embedded Outpost" by the
+  # embedded-outpost.yaml blueprint (the single source of truth for that list).

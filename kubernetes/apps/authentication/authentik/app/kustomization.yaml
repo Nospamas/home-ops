@@ -15,6 +15,7 @@ configMapGenerator:
       - ./resources/prowlarr.yaml
       - ./resources/radarr.yaml
       - ./resources/sonarr.yaml
+      - ./resources/tautulli.yaml
       - ./resources/homepage.yaml
       - ./resources/grafana.yaml
       - ./resources/home-assistant.yaml
