@@ -15,4 +15,4 @@ addresses and domains, and to make Components parameterisable by substitution.
 
 Trade-off: values resolve at Flux build time, so `${VAR}` references can't be
 validated by reading a single file — you must know the global scheme (see
-`CONTEXT.md`). The `flux-local` tooling renders substitutions for validation.
+`CONTEXT.md`). The `flate` tooling renders substitutions for validation.

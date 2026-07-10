@@ -1,20 +1,4 @@
 ---
-# yaml-language-server: $schema=$schema=https://kubernetes-schemas.pages.dev/source.toolkit.fluxcd.io/gitrepository_v1.json
-apiVersion: source.toolkit.fluxcd.io/v1
-kind: GitRepository
-metadata:
-  name: &app cnpg-barman-cloud-crds
-spec:
-  interval: 30m
-  url: https://github.com/cloudnative-pg/plugin-barman-cloud.git
-  ref:
-    tag: v0.13.0
-  ignore: |
-    # exclude
-    /*
-    # include
-    !config/crd/bases/barmancloud.cnpg.io_objectstores.yaml
----
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -29,7 +13,9 @@ spec:
   prune: true
   sourceRef:
     kind: GitRepository
-    name: *app
+    name: flux-system
+    namespace: flux-system
+  path: ./kubernetes/apps/database/cnpg/barman-crds
   interval: 1h
   healthChecks:
     - &crds

@@ -37,4 +37,4 @@ Extended notes on specific systems are in `.claude/memory/` with an index summar
 
 **Backups.** Opt an App's PVC into the `components/volsync` Component and set the `VOLSYNC_*` knobs. See `docs/adr/0003`.
 
-**Validation.** `flux-local` runs in CI (`.github/workflows/flux-local.yaml`) and renders substitutions; `task reconcile` forces Flux to pull changes after they're committed. Tooling is pinned in `.mise.toml`.
+**Validation.** `flate` runs in CI (`.github/workflows/flate.yaml`) and renders substitutions; `task reconcile` forces Flux to pull changes after they're committed. Tooling is pinned in `.mise.toml`.
