@@ -1,0 +1,30 @@
+---
+web:
+  port: ${GATUS_WEB_PORT}
+
+storage:
+  type: sqlite
+  path: ${GATUS_CONFIG_PATH}/sqlite.db
+  caching: true
+
+metrics: true
+debug: false
+
+ui:
+  title: Status | Home Ops
+  header: Status
+
+endpoints:
+  - name: Cloudflare
+    group: connectivity
+    url: icmp://1.1.1.1
+    interval: 1m
+    conditions:
+      - '[CONNECTED] == true'
+
+  - name: Google
+    group: connectivity
+    url: icmp://8.8.8.8
+    interval: 1m
+    conditions:
+      - '[CONNECTED] == true'

@@ -9,6 +9,7 @@ components:
 resources:
   - ./kube-prometheus-stack/ks.yaml
   - ./grafana/ks.yaml
+  - ./gatus/ks.yaml
 patches:
   # privileged on namespace for Intel GPU device plugin
   - patch: |-

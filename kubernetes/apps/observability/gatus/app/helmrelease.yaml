@@ -1,0 +1,67 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app gatus
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  interval: 1h
+  values:
+    nameOverride: *app
+
+    deploymentAnnotations:
+      reloader.stakater.com/auto: 'true'
+
+    gatus:
+      delayStartSeconds: '5'
+
+    # Auto-generate endpoints from cluster resources annotated with
+    # gatus.home-operations.com/endpoint (HTTPRoutes are opted in by default).
+    sidecar:
+      kinds:
+        httproute:
+          enable: true
+          auto: true
+        service:
+          enable: true
+
+    httpRoute:
+      enabled: true
+      annotations:
+        # don't monitor the status page from within itself
+        gatus.home-operations.com/enabled: 'false'
+        gethomepage.dev/enabled: 'true'
+        gethomepage.dev/group: Observability
+        gethomepage.dev/name: Gatus
+        gethomepage.dev/icon: gatus.svg
+        gethomepage.dev/href: https://status.${SECRET_DOMAIN}
+      hostnames: ['status.${SECRET_DOMAIN}']
+      parentRefs:
+        - name: envoy-external
+          namespace: network
+          sectionName: https
+
+    monitoring:
+      serviceMonitor:
+        enabled: true
+
+    config:
+      existingConfigMap: '{{ .Release.Name }}-configmap'
+      items:
+        - key: config.yaml
+          path: config.yaml
+
+    persistence:
+      enabled: true
+      storageClass: longhorn
+      accessMode: ReadWriteOnce
+      size: 2Gi
+
+    resources:
+      requests:
+        cpu: 100m
+      limits:
+        memory: 512Mi
