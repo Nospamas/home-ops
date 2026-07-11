@@ -1,0 +1,53 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app konflate
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: *app
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    # konflate keeps PR/diff state in memory; single instance only (chart enforces Recreate).
+    config:
+      repo: github://Nospamas/home-ops
+      # Match the Flux cluster entrypoint that flate renders from (same as CI's --path).
+      clusterPath: kubernetes/flux/cluster
+      logFormat: text
+      # Write-back to GitHub (needs KONFLATE_WRITE_TOKEN in the secret; stays off until set).
+      statusChecks: true
+      prComments: true
+      publicUrl: https://konflate.${SECRET_DOMAIN}
+    # Read/webhook/write credentials live in the SOPS secret below.
+    secret:
+      existingSecret: konflate-secret
+    # Internet-exposed via the Cloudflare tunnel so GitHub webhooks reach POST /hooks.
+    httpRoute:
+      enabled: true
+      parentRefs:
+        - name: envoy-external
+          namespace: network
+          sectionName: https
+      hostnames:
+        - konflate.${SECRET_DOMAIN}
+      annotations:
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/name: Konflate
+        gethomepage.dev/group: Infrastructure
+        gethomepage.dev/icon: mdi-source-pull
+        gethomepage.dev/description: GitOps PR review (rendered Flux diffs)
+    resources:
+      requests:
+        cpu: 50m
+        memory: 256Mi
+      limits:
+        memory: 1Gi
