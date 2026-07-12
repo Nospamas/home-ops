@@ -67,6 +67,7 @@ spec:
               readOnlyRootFilesystem: true
               capabilities: { drop: [ALL] }
     defaultPodOptions:
+      automountServiceAccountToken: true # operator reconciles Dragonfly CRs via the API
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000

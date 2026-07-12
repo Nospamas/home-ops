@@ -12,6 +12,8 @@ spec:
   values:
     defaultPodOptions:
       hostUsers: false
+      # kubernetes.yaml runs `mode: cluster`; the widgets read the projected SA token
+      automountServiceAccountToken: true
     controllers:
       homepage:
         replicas: 1

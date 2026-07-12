@@ -55,6 +55,7 @@ spec:
               readOnlyRootFilesystem: true
 
     defaultPodOptions:
+      automountServiceAccountToken: true # operator reconciles ObjectStores via the API
       securityContext:
         runAsNonRoot: true
         runAsGroup: 10001
@@ -270,10 +271,10 @@ spec:
             identifier: *app
           subjects: *subject
     rawResources:
-      client: &cert
-        apiVersion: cert-manager.io/v1
-        kind: Certificate
-        spec:
+      client:
+        manifest: &cert
+          apiVersion: cert-manager.io/v1
+          kind: Certificate
           spec: &certSpec
             commonName: barman-cloud-client
             duration: 2160h
@@ -287,8 +288,8 @@ spec:
             usages:
               - client auth
       server:
-        <<: *cert
-        spec:
+        manifest:
+          <<: *cert
           spec:
             <<: *certSpec
             commonName: barman-cloud
