@@ -21,4 +21,13 @@ spec:
     requests:
       cpu: 100m
       memory: 128Mi
+  # The operator mints an installation token from the App and injects it as
+  # RENOVATE_TOKEN, refreshing it when under 30m TTL. No PAT for the platform.
+  githubAppReference:
+    secretName: renovate-github-app
+    appIdSecretKey: APP_ID
+    installationIdSecretKey: INSTALL_ID
+    pemSecretKey: PEM
+  # Still carries GITHUB_COM_TOKEN: an installation token can't read changelogs
+  # from third-party public repos, so that one stays a (scopeless) PAT.
   secretRef: renovate-secret

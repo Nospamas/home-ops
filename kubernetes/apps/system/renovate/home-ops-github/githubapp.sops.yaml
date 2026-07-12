@@ -1,0 +1,38 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.1/secret.json
+# Credentials for the shared "home-ops" GitHub App (also used by konflate).
+# Read ONLY by renovate-operator, which signs a JWT, exchanges it for an
+# installation token, and injects that as RENOVATE_TOKEN into the job. The PEM
+# never reaches the renovate container itself — that's why this is a separate
+# secret from renovate-secret (which is envFrom'd wholesale into the job).
+#
+# APP_ID     — the *numeric* App ID (konflate uses the Client ID instead; not the same value).
+# INSTALL_ID — installation id: https://github.com/settings/installations → Configure → trailing URL segment.
+# PEM        — the App private key, same PEM as KONFLATE_APP_PRIVATE_KEY.
+#
+# Encrypt before committing:
+#   sops --encrypt --in-place kubernetes/apps/system/renovate/home-ops-github/githubapp.sops.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: renovate-github-app
+type: Opaque
+stringData:
+  APP_ID: ENC[AES256_GCM,data:2PVrt3zF8Q==,iv:FdB5qbvSuDDODJyUZzdlKpBzU4cxQb9KCoHqPLejaaI=,tag:zvSSjz9SY3Sr16zPcoRE1g==,type:str]
+  INSTALL_ID: ENC[AES256_GCM,data:XwdIb1OLAeTE,iv:xFt264CuqxGk1G4P80BrZSLjBbvGlGRPxIPwhPWqPuc=,tag:Pz5JYWp+BNmIbaLLGqb9OA==,type:str]
+  PEM: ENC[AES256_GCM,data:+5iyWPhY1BBrioIZvnUmIr9hAyg666GK3IpsyfFHBbvld8hd3ipI4YZ8ZL/hPbwQb2ExlFnuBW8qf3vRdH5G7yGSv3NVTPRKjeKfm72IKAy77kM8rlHXXuMIKkDrdWcYJ9mAa4zPsMPc1/xApcV/1CLaTgWjUSSiXfZ3Dwped77U5yLkTj/Rv9NsoTClVGh9k0W7IoYlVtL/lzxtBSR+Kq80qG5uBhXYlLTy60uZYP470T7j1VwFjor34T3ETL4nTu3AfVZ3CjSNODfo6Ai607jgsG0WNhNu7lV9OocdHUHg8CA5qPRE5iXtPY9jsChU3xwchA6N5e5Epf8fq7mKcnOqxsDq5GMYBJY+rBytzyW8f8gktDacbyClrJTFTHzMZBMR0N7sWxj0DS7q/MkW98VUIGZAQ2G5htqd2BCc6UHF6Ib05LB34ZF4KQ5EoWR/IYf+3ZKkNjYmv1kxPM8ESnJpi4GDjKDoT/aYGbxKb03R4vrPNLhAi4ydfExITGa4thORsePSY8N1oF5dGlWhYmreuM1yC0AurHQSJYIisEQ+qUssf/HfEm0w8KX3mjO2EsRCdiKZICYKeuGaWRJhaxXL2wlKtF3aHvFtSSEPqdgHYhkNuC5bZ6yqrDbFo6JM7es+epiy9SlfgSvW4bJBz+ZlgLDssbF5m3StG/BwJiKFtaLuMSFqs9asMst+QD9bAQZGzof+XL3AdpGqJ8/44urkTOSTymReuxsmMtQ7XOwwBjDYEe/xiQLP1CnRjmWq3q+cz7CmHKQ5MBnCLmylZmNP3vGsJ+eP3OBvBScCFWwWLEaxJYjsM6noFinQMpmdkJU6vy0Cim/2KXfna837fxNH40mD7R4cHbpxmgHNDPYiM4cipM0+Qp54D5wpgh/WW0A05RKTb+IEavoAc34imYrxBQLCpN4kL3HLUAJovBaOGV5LR9EgdbVbMk8ESd6pNT0o7TSFpMpei12x5JR0HSSzHk4GgoWR8/x6ZV7azGOEmSagh3c2lSUrNq3Zkzg1L7uNTrh4ULwMgT2YnuEDaFDZuelG3E9TdnNdHs7UuaqR1fzRTZlXM9pa/ydQ+7dCqSu9qmrGcu42SI6P7HFvKnL3xczGdxQ3Opxd6UMQmXcFUgmK/cUlatrDmuPIX8avNBUcCZTlTos3QAqoK2vmf8OWLbduCwgn3u1EH0csX5pzISt9xm+/ikbRedLVBMA4KE++Nrg3ms+anIuv4K7PCENr205p8qzLC3pWdS4aAWEuMSCZ+GC5RyFX6gcyz5hVBnQVSSCvV34qPJ5y6s0TujHLBCXAOcyKQKYIgdWXl4tweOty85bMbNzVLjdQI7GCt1SccPxdfh96qZwlDiMAQnT7T0ZCsNhik/3rvJXNqWqm3Vq4lP4pu0l+2GbSil1CKHamWryCSjldPI3H1KXKrqsF7JxsU1H7tyPMXOL0RBveznToVpbsQqO42oaPa1nt4iDBzJgQr05lmNYN6iFYUjYP/1Yq8qo25dCfKUG94GfAo2UqzQYeqLPyKSh2R8KZ9bf2CHwtDei6N6uLRBoWF30q8PeDnPRzRA2FRnFWpe6UfS3Dnx+W2FFUkyEn1jVfny3jpGWBJlD/fMqvWZnlbk/4telFanLKEilMOVsHUiT+4HbBiSwhZrauOR/bfM3xz/VMbB2ut5/MYHx5AXb430bV5Ki2IB6MHNFriAeaCor00YibPqiEtw2TCpfLNeBUNvR+1JQmq9C+ld/sG+p6roSJevTl6pf5nXa247hZqpAhNctnlZ4GOZvwc7SWZ+Fozjitma1XnCJ2idHDU2ZGjzPgCS4GagLUcL2fPltyGjj1rjRzlBU5da39vrH6w89ZB6I8ITAqjwvVWMZPKBGb25FvWTWN8KfqcRBq+if7Pq8HH5xOGuzj6ZlKgYD9t898WnhDDnMqWXMwjT4hxknpcP3SpCc5z1DwwVzd6+A2MZGDNrB2k6zy27nQNifntu9y0V9WIqhl4XU9TfguE+UHMg8HbDAnlpRc8ShD+NPBjhOCoO2Ok0NRvmbQzAtnSDRhNOBCRXtcxaq+ywuQXctWsNiRt/2uX6JyaiduuYLF2aXqnR/6AKnp8q45tcC52zLrJuK9grjXJkcLsbyRHuVJw37DfA8chWsRDEDGgT7ynOCy+WLpG9nTzOhEGARAxagSpsk4IOfK7yQ0vXyMoxbS9sCTcZsBKNl67HyTHMw0wNH4Bu5/Dv5BKjhzfQ==,iv:Cmoqyj+bPv9c6i0MbSZ4hOp0i8Hu4ya2MD97Utvbogc=,tag:OI7JYQWGvg/leXaJjZbYVg==,type:str]
+sops:
+  age:
+    - enc: |
+        -----BEGIN AGE ENCRYPTED FILE-----
+        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSAzU0JrNVdSY0hTY0cvSHpR
+        NHpqQVdVZFd3ZEZYeVBjQVRjNXoxSFhEb1I4CkVIS2ZvclNNRGZKazk3RFB4bjdr
+        SkNmMjB2bFdKeW9zdC8zNTdGVXJjbVUKLS0tIEU5Z2lWdGpVSm80YUhOMnBNK0pW
+        T01uaG9oRUxqUWN3Z1VMaDd6eXcraE0KoJkiv5MPrZXwJ4fi0SUnfqyVH9X5LkxA
+        HEB/2e5yRE7wPYLk0iZ0robMv+5sxk7tLAWGXDYipmscn2JcL3++7Q==
+        -----END AGE ENCRYPTED FILE-----
+      recipient: age1sq0wjrxgd2p0kl55cl22306l3lyzt5n0hdmqny6tr9qfkwyxu3aszelc7a
+  encrypted_regex: ^(data|stringData)$
+  lastmodified: "2026-07-12T09:34:35Z"
+  mac: ENC[AES256_GCM,data:B/m75Kq3QqigzeUqor1ucis84I+7UkqXiBInKv/rVjbCSjZasQIJtq+Y3wtsAuAAXtHh/0sXIRmAFt3G+kCht72boAwwh9xf1V6Hl/FDlGtTAcBlzyUCleXNoiSmm+4WiOnWp7P5gnkuAYXaoIVrSMwoCkkFj++cNt0n8rrea6w=,iv:GZJcnwOvzyKCvX7GdDP0WQ9aa6t3uFy+gNn0qMbsK2s=,tag:H/uIZ8XXVR0nHXu0K8ZSPA==,type:str]
+  mac_only_encrypted: true
+  version: 3.13.2

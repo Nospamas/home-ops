@@ -23,11 +23,12 @@ spec:
       # Match the Flux cluster entrypoint that flate renders from (same as CI's --path).
       clusterPath: kubernetes/flux/cluster
       logFormat: text
-      # Write-back to GitHub (needs KONFLATE_WRITE_TOKEN in the secret; stays off until set).
+      # Write-back to GitHub; authenticated as the shared GitHub App.
       statusChecks: true
       prComments: true
       publicUrl: https://konflate.${SECRET_DOMAIN}
-    # Read/webhook/write credentials live in the SOPS secret below.
+    # App client id + PEM live in the SOPS secret; konflate mints its own
+    # short-lived installation tokens and auto-detects the installation.
     secret:
       existingSecret: konflate-secret
     # Internet-exposed via the Cloudflare tunnel so GitHub webhooks reach POST /hooks.
