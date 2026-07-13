@@ -26,15 +26,24 @@ spec:
                     - FailedBarePods
                     - PodsWithLocalStorage
                     - SystemCriticalPods
-                evictableNamespaces:
-                  exclude:
-                    - storage
+                # Volsync stamps this label on the mover pod template. Movers are Job-owned
+                # and run in the *app's* namespace; evicting one mid-transfer restarts the
+                # sync from scratch, which is costly for a long restore.
                 labelSelector:
                   matchExpressions:
                     - key: app.kubernetes.io/created-by
                       operator: NotIn
                       values:
                         - volsync
+                # Longhorn instance-managers are bare pods on host-local storage, and the
+                # protections that would cover them are disabled above — evicting one takes
+                # its replicas down with it.
+                namespaceLabelSelector:
+                  matchExpressions:
+                    - key: kubernetes.io/metadata.name
+                      operator: NotIn
+                      values:
+                        - storage
             - name: LowNodeUtilization
               args:
                 metricsUtilization:
