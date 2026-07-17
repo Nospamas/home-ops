@@ -13,4 +13,5 @@ resources:
   - ./home-assistant/ks.yaml
   - ./immich/ks.yaml
   - ./it-tools/ks.yaml
+  - ./palworld/ks.yaml
   - ./syncthing/ks.yaml
