@@ -1,0 +1,22 @@
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliuml2announcementpolicy_v2alpha1.json
+apiVersion: cilium.io/v2alpha1
+kind: CiliumL2AnnouncementPolicy
+metadata:
+  name: palworld-l2
+spec:
+  # Pin the ARP announcer to the same node the pod is pinned to (ctrl-02). With
+  # externalTrafficPolicy: Local the VIP is only served by the node holding the
+  # pod, so the L2 leader must live there too or LAN clients ARP a node that drops
+  # their traffic. Excluded from the cluster-wide l2-policy to avoid dual announce.
+  loadBalancerIPs: true
+  serviceSelector:
+    matchLabels:
+      app.kubernetes.io/name: palworld
+  interfaces:
+    - ^br[0-9]+
+    - ^eno[0-9]+
+    - ^eth[0-9]+
+  nodeSelector:
+    matchLabels:
+      kubernetes.io/hostname: ctrl-02

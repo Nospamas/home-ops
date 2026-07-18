@@ -81,6 +81,10 @@ spec:
               limits:
                 memory: 16Gi
     defaultPodOptions:
+      # Pinned to ctrl-02 to stay co-located with the palworld-l2 ARP announcer and
+      # the sole BGP advertiser (externalTrafficPolicy: Local). Single-replica anyway.
+      nodeSelector:
+        kubernetes.io/hostname: ctrl-02
       # The image starts as root to run steamcmd + chown, then drops to PUID/PGID.
       securityContext:
         fsGroup: 1000
@@ -89,10 +93,9 @@ spec:
       app:
         controller: palworld
         type: LoadBalancer
-        # All nodes BGP-advertise the VIP to the router, so `Cluster` lets it ECMP
-        # a single UDP session across nodes, each SNATing to its own IP — the game
-        # sees the client's source flip and the session resets. `Local` advertises
-        # only from the node with the pod and preserves the client IP.
+        # Local keeps the client's real IP and makes only the pod's node advertise
+        # the VIP over BGP (no router ECMP spray). The pod and the ARP announcer are
+        # both pinned to ctrl-02 so this node always has a local backend.
         externalTrafficPolicy: Local
         annotations:
           lbipam.cilium.io/ips: "${IP_SVC_PALWORLD}"

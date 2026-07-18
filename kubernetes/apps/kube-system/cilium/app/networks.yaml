@@ -16,6 +16,11 @@ metadata:
   name: l2-policy
 spec:
   loadBalancerIPs: true
+  # palworld is announced by its own node-pinned policy (see apps/self-hosted/palworld)
+  # so its L2 leader stays co-located with the pod under externalTrafficPolicy: Local.
+  serviceSelector:
+    matchExpressions:
+      - { key: app.kubernetes.io/name, operator: NotIn, values: ["palworld"] }
   # NOTE: interfaces might need to be set if you have more than one active NIC on your hosts
   interfaces:
     - ^br[0-9]+
