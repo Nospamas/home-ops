@@ -21,6 +21,7 @@ spec:
     substitute:
       APP: *app
       VOLSYNC_CAPACITY: 100Gi
+      VOLSYNC_STORAGECLASS: longhorn-ultra-fast
   prune: true
   sourceRef:
     kind: GitRepository

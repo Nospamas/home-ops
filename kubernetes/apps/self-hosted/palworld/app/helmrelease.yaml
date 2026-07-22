@@ -39,7 +39,6 @@ spec:
               # First boot installs the server via steamcmd — must stay true
               UPDATE_ON_BOOT: "true"
               # Backups are handled by the volsync component, not the image
-              BACKUP_ENABLED: "false"
               COMMUNITY: "false"
               SERVER_NAME: "Pals of Nospamas"
               SERVER_DESCRIPTION: "Palworld dedicated server"
@@ -47,6 +46,7 @@ spec:
               REST_API_ENABLED: "true"
               REST_API_PORT: "8212"
               ENABLE_VOICE_CHAT: true
+              BASE_CAMP_WORKER_MAX_NUM: 20
             envFrom:
               - secretRef:
                   name: palworld-secret
