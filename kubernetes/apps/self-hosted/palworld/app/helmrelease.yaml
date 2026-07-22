@@ -48,6 +48,10 @@ spec:
               ENABLE_VOICE_CHAT: true
               BASE_CAMP_WORKER_MAX_NUM: 20
               LOG_LEVEL: "INFO"
+              # Enable compile-engine.sh so Engine.ini is regenerated on boot with
+              # tuned network/tick settings (defaults: Net/LanServerMaxTickRate=120,
+              # 100MB/s per-player bandwidth). Image default disables this.
+              DISABLE_GENERATE_ENGINE: "false"
             envFrom:
               - secretRef:
                   name: palworld-secret
