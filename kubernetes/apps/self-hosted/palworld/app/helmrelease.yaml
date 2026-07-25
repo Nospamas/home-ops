@@ -26,7 +26,7 @@ spec:
             image:
               repository: ghcr.io/thijsvanloef/palworld-server-docker
               # renovate: datasource=docker depName=ghcr.io/thijsvanloef/palworld-server-docker
-              tag: v2.7.0@sha256:4145c58737fcd9f9f03d35de6bf33c0008b829b65d3080822bc46830bdb38fdf
+              tag: v2.7.1@sha256:401d3eb5c053bcd72949e1ede8c4e38be5e5ad66be7272ac37940706df0aeb2f
             env:
               TZ: ${CLUSTER_TIMEZONE}
               PUID: "1000"
