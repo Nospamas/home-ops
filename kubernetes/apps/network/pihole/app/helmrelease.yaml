@@ -107,7 +107,7 @@ spec:
               FTLCONF_dns_upstreams: ${IP_SVC_DNSCRYPT};${IP6_SVC_DNSCRYPT}
               FTLCONF_webserver_interface_boxed: false
               FTLCONF_webserver_interface_theme: default-auto
-              FTLCONF_webserver_port: &pihole-port 80
+              FTLCONF_webserver_port: '80,[::]:80'
               FTLCONF_webserver_api_password: &pihole-password
                 valueFrom:
                   secretKeyRef:
@@ -142,7 +142,7 @@ spec:
                 valueFrom:
                   fieldRef:
                     fieldPath: status.podIP
-              PIHOLE_PORT: *pihole-port
+              PIHOLE_PORT: &pihole-port 80
               PIHOLE_PASSWORD: *pihole-password
             resources:
               requests:
