@@ -242,19 +242,30 @@ spec:
         service:
           identifier: *nasExporter
         endpoints:
-          - port: prometheus # exporter-port's name
-            scheme: http
-            path: /metrics
-            interval: 1m
-            # 10s left no headroom: when the upstream Pi-hole is unhealthy the
-            # exporter's /metrics can take >10s, timing the target out and
-            # blanking the dashboard rather than showing degraded data.
-            scrapeTimeout: 30s
+          - <<: &exporterEndpoint
+              port: prometheus # exporter-port's name
+              scheme: http
+              path: /metrics
+              interval: 1m
+              scrapeTimeout: 30s
+              metricRelabelings:
+                - action: labeldrop
+                  regex: exported_hostname
+            # A Deployment, so the pod name carries a random suffix -- pin it.
+            relabelings:
+              - targetLabel: hostname
+                replacement: pihole-nas
       app:
         <<: *serviceMonitor
         forceRename: *app
         service:
           identifier: *app
+        endpoints:
+          - <<: *exporterEndpoint
+            # A StatefulSet, so pod names are already pihole-0/1/2.
+            relabelings:
+              - sourceLabels: [__meta_kubernetes_pod_name]
+                targetLabel: hostname
 
     persistence:
       config-map:
