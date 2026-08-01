@@ -92,6 +92,12 @@ spec:
 
     route:
       app:
+        annotations:
+          # The sidecar's auto-extracted path is the first rule's /library/streams,
+          # and / needs an X-Plex-Token. /identity is unauthenticated and reports
+          # the real server, not just a static asset.
+          gatus.home-operations.com/endpoint: |-
+            path: /identity
         hostnames:
           - "{{ .Release.Name }}.${SECRET_DOMAIN}"
         parentRefs:

@@ -52,12 +52,17 @@ spec:
           - name: autopath
             parameters: '@kubernetes'
           - name: forward
-            parameters: internal. dns://${IP_DNS_PRIMARY} dns://${IP_DNS_SECONDARY} dns://${IP_GATEWAY}
+            # Only the in-cluster Pi-hole carries the `internal.` host-records
+            # (03-hosts.conf is mounted into those pods only). Listing the
+            # secondary or the gateway here is worse than useless: on any blip
+            # of the primary they answer an authoritative NXDOMAIN carrying the
+            # root SOA, which `cache` then pins for up to 30m.
+            parameters: internal. dns://${IP_DNS_PRIMARY}
             configBlock: |-
               policy sequential
               health_check 5s
           - name: forward
-            parameters: ${SECRET_DOMAIN}. dns://${IP_DNS_PRIMARY} dns://${IP_DNS_SECONDARY} dns://${IP_GATEWAY}
+            parameters: ${SECRET_DOMAIN}. dns://${IP_DNS_PRIMARY} dns://${IP_DNS_SECONDARY}
             configBlock: |-
               policy sequential
               health_check 5s
