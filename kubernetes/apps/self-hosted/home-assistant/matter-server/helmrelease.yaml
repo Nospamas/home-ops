@@ -14,11 +14,15 @@ spec:
   values:
     defaultPodOptions:
       annotations:
+        # IPv4 only. The IPv6 address must come from SLAAC on the LAN's on-link
+        # prefix: Thread devices sit behind the border router in a ULA prefix, so
+        # RFC 6724 source selection would pick a static ULA here in preference to
+        # the GUA — and replies to that ULA are not routable back from the mesh.
         k8s.v1.cni.cncf.io/networks: |-
           [{
             "name": "iot",
             "namespace": "network",
-            "ips": ["${IP_IOT_MATTER_SERVER}/16", "${IP6_IOT_MATTER_SERVER}/64"]
+            "ips": ["${IP_IOT_MATTER_SERVER}/16"]
           }]
       hostUsers: false
       securityContext:
@@ -47,7 +51,9 @@ spec:
               - --storage-path=/data
               - --primary-interface=net1
               - --log-level=debug
-              - --log-level-sdk=info
+              # Must be one of: none, error, progress, detail, automation.
+              # An unrecognised value silently disables SDK logging entirely.
+              - --log-level-sdk=progress
             resources:
               requests:
                 cpu: 10m
