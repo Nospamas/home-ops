@@ -5,7 +5,6 @@ kind: Kustomization
 resources:
 - ./credentials.sops.yaml
 - ./ssh.sops.yaml
-- ./ubuntu-image.yaml
 - ./vm.yaml
 - ./service.yaml
 - ./home-network.yaml
