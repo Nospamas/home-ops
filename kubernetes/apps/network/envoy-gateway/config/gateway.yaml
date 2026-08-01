@@ -6,6 +6,10 @@ metadata:
   name: envoy-external
   annotations:
     external-dns.alpha.kubernetes.io/target: &hostname external.${SECRET_DOMAIN}
+    # Inherited by every HTTPRoute attached here, so Gatus groups by exposure.
+    # A route can still override it with its own endpoint annotation.
+    gatus.home-operations.com/endpoint: |-
+      group: external
 spec:
   gatewayClassName: envoy
   infrastructure:
@@ -37,6 +41,8 @@ metadata:
   name: envoy-internal
   annotations:
     external-dns.alpha.kubernetes.io/target: &hostname internal.${SECRET_DOMAIN}
+    gatus.home-operations.com/endpoint: |-
+      group: internal
 spec:
   gatewayClassName: envoy
   infrastructure:

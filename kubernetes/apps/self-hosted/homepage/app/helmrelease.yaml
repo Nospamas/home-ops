@@ -122,9 +122,7 @@ spec:
 
     route:
       app:
-        annotations:
-          gatus.home-operations.com/endpoint: |-
-            group: internal
+        # group is inherited from the envoy-internal Gateway
         hostnames:
           - 'home.${SECRET_DOMAIN}'
         parentRefs:
