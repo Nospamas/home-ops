@@ -246,7 +246,10 @@ spec:
             scheme: http
             path: /metrics
             interval: 1m
-            scrapeTimeout: 10s
+            # 10s left no headroom: when the upstream Pi-hole is unhealthy the
+            # exporter's /metrics can take >10s, timing the target out and
+            # blanking the dashboard rather than showing degraded data.
+            scrapeTimeout: 30s
       app:
         <<: *serviceMonitor
         forceRename: *app
