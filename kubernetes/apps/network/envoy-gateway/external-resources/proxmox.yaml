@@ -53,3 +53,16 @@ spec:
       name: proxmox
       namespace: network
       port: 8006
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: BackendTLSPolicy
+metadata:
+  name: proxmox
+spec:
+  targetRefs:
+    - group: ""
+      kind: Service
+      name: proxmox
+  validation:
+    hostname: proxmox.${SECRET_DOMAIN}
+    wellKnownCACertificates: System
