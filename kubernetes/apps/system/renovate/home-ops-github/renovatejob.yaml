@@ -8,6 +8,7 @@ spec:
   schedule: 0 * * * *
   discoveryFilters:
     - nospamas/home-ops
+    - nospamas/unraid-ops
   provider:
     name: github
   extraEnv:
