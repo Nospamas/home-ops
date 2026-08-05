@@ -25,9 +25,9 @@ spec:
         # flips between "6 minutes left" and "360 days left" as traffic moves.
         # Replaced below by kubelet-cert-rules, which reads real per-node TTLs.
         KubeClientCertificateExpiration: true
-        # proxmox deliberately runs near-full — its memory is committed to VMs
-        # and ZFS ARC, and it has been stable that way. Replaced below by
-        # node-memory-rules, which is the upstream rule minus that one host.
+        # Upstream's rule is ZFS-ARC-blind, which misreads ARC-heavy hosts as
+        # nearly out of memory. Replaced below by node-memory-rules, which
+        # counts reclaimable ARC as available.
         NodeMemoryHighUtilization: true
     alertmanager:
       route:
@@ -196,16 +196,55 @@ spec:
         groups:
           - name: node-memory
             rules:
-              # Upstream NodeMemoryHighUtilization (disabled above) verbatim,
-              # except proxmox is excluded: it is deliberately provisioned to
-              # run near-full and alerts on it are noise, not signal.
+              # Replaces upstream NodeMemoryHighUtilization (disabled above),
+              # which is ARC-blind. ZFS ARC is reclaimable under pressure, but
+              # Linux does not count it in MemAvailable, so an ARC-heavy host
+              # reads as nearly full when it is nearly empty: truenas measures
+              # 90.9% on the upstream rule and 9.7% here.
+              #
+              # ARC only gives memory back down to its c_min floor, so only the
+              # amount above c_min is genuinely reclaimable. clamp_min guards
+              # hosts whose ARC currently sits *below* c_min, where the
+              # subtraction would otherwise go negative and push utilisation
+              # over 100%. The `or ... * 0` arm contributes zero on non-ZFS
+              # hosts, which expose no node_zfs_* series at all.
+              #
+              # proxmox is excluded rather than corrected: its ARC is empty and
+              # the ~59GiB in use is anonymous VM memory, genuinely committed
+              # and not reclaimable. It is deliberately provisioned that way and
+              # has been stable, so ARC-awareness does not help it. It gets its
+              # own higher threshold in the rule below instead.
               - alert: NodeMemoryHighUtilization
                 annotations:
                   description: |
-                    Memory is filling up at {{ $labels.instance }}, has been above 90% for the last 15 minutes, is currently at {{ printf "%.2f" $value }}%.
+                    Memory is filling up at {{ $labels.instance }}, has been above 90% for the last 15 minutes, is currently at {{ printf "%.2f" $value }}% (ZFS ARC above c_min counted as available).
                   runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodememoryhighutilization
                   summary: Host is running out of memory.
-                expr: 100 - (node_memory_MemAvailable_bytes{job="node-exporter", instance!="proxmox.server.internal:9100"} / node_memory_MemTotal_bytes{job="node-exporter", instance!="proxmox.server.internal:9100"} * 100) > 90
+                expr: |
+                  100 - ((
+                    node_memory_MemAvailable_bytes{job="node-exporter", instance!="proxmox.server.internal:9100"}
+                    + (
+                        clamp_min(node_zfs_arc_size - node_zfs_arc_c_min, 0)
+                        or (node_memory_MemAvailable_bytes{job="node-exporter", instance!="proxmox.server.internal:9100"} * 0)
+                      )
+                  ) / node_memory_MemTotal_bytes{job="node-exporter", instance!="proxmox.server.internal:9100"} * 100) > 90
+                for: 15m
+                labels:
+                  severity: warning
+              # proxmox runs deliberately near-full on committed VM memory, so
+              # the 90% threshold above is meaningless for it — but leaving it
+              # unmonitored is a blind spot. 99.5% is picked from 30d of its own
+              # history: sustained-15m utilisation ranged 98.12-99.41%, so this
+              # would have fired zero times, while 99% would have fired 187
+              # times and 99.3% still 76. When it does fire, under ~320MiB of
+              # 62.7GiB remains, which is genuinely close to trouble.
+              - alert: NodeMemoryHighUtilization
+                annotations:
+                  description: |
+                    Memory is filling up at {{ $labels.instance }}, has been above 99.5% for the last 15 minutes, is currently at {{ printf "%.2f" $value }}%. This host normally sits near 98.7%, so it is committing meaningfully more than usual.
+                  runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodememoryhighutilization
+                  summary: Host is running out of memory.
+                expr: 100 - (node_memory_MemAvailable_bytes{job="node-exporter", instance="proxmox.server.internal:9100"} / node_memory_MemTotal_bytes{job="node-exporter", instance="proxmox.server.internal:9100"} * 100) > 99.5
                 for: 15m
                 labels:
                   severity: warning
