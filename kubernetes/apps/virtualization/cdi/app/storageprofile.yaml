@@ -1,0 +1,19 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/cdi.kubevirt.io/storageprofile_v1beta1.json
+apiVersion: cdi.kubevirt.io/v1beta1
+kind: StorageProfile
+metadata:
+  name: openebs-hostpath
+# CDI auto-creates a StorageProfile per StorageClass and infers the claim
+# properties from the provisioner. It has no entry for openebs.io/local, so the
+# profile stays incomplete and CDIStorageProfilesIncomplete fires forever —
+# which it will keep doing whether or not CDI ever provisions a VM disk here,
+# because CDI enumerates every StorageClass in the cluster.
+#
+# Nothing about openebs-hostpath is ambiguous: it is a node-local hostpath
+# directory, so ReadWriteOnce/Filesystem is the only combination it can serve.
+# Filling spec in is the documented override for provisioners CDI does not know.
+spec:
+  claimPropertySets:
+    - accessModes: ['ReadWriteOnce']
+      volumeMode: Filesystem
