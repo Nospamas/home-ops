@@ -17,6 +17,14 @@ spec:
         enabled: true
         forceConflicts: true
     cleanPrometheusOperatorObjectNames: true
+    defaultRules:
+      disabled:
+        # Talos' own control-plane controllers talk to the apiserver with
+        # 10-minute client certs they mint on demand. They are ~0.5-7% of
+        # apiserver requests, so the rule's 1st-percentile straddles them and
+        # flips between "6 minutes left" and "360 days left" as traffic moves.
+        # Replaced below by kubelet-cert-rules, which reads real per-node TTLs.
+        KubeClientCertificateExpiration: true
     alertmanager:
       route:
         main:
@@ -132,6 +140,26 @@ spec:
                 annotations:
                   summary: Kubernetes cluster Dockerhub rate limit risk
                 expr: count (count by (image) (time() - container_last_seen{image=~"(docker.io).*",container!=""} < 30)) > 25
+                labels:
+                  severity: critical
+      kubelet-cert-rules:
+        groups:
+          - name: kubelet-certs
+            rules:
+              - alert: KubeletClientCertificateExpiration
+                annotations:
+                  summary: The kubelet client certificate on {{ $labels.node }} expires in {{ $value | humanizeDuration }} and has not been rotated.
+                  description: Talos rotates the kubelet client certificate well before expiry; a TTL this low means rotation is failing on that node.
+                expr: kubelet_certificate_manager_client_ttl_seconds < 7 * 24 * 60 * 60
+                for: 15m
+                labels:
+                  severity: warning
+              - alert: KubeletClientCertificateExpiration
+                annotations:
+                  summary: The kubelet client certificate on {{ $labels.node }} expires in {{ $value | humanizeDuration }} and has not been rotated.
+                  description: Talos rotates the kubelet client certificate well before expiry; a TTL this low means rotation is failing on that node.
+                expr: kubelet_certificate_manager_client_ttl_seconds < 24 * 60 * 60
+                for: 15m
                 labels:
                   severity: critical
       oom-rules:
