@@ -25,6 +25,10 @@ spec:
         # flips between "6 minutes left" and "360 days left" as traffic moves.
         # Replaced below by kubelet-cert-rules, which reads real per-node TTLs.
         KubeClientCertificateExpiration: true
+        # proxmox deliberately runs near-full — its memory is committed to VMs
+        # and ZFS ARC, and it has been stable that way. Replaced below by
+        # node-memory-rules, which is the upstream rule minus that one host.
+        NodeMemoryHighUtilization: true
     alertmanager:
       route:
         main:
@@ -188,3 +192,20 @@ spec:
                 expr: (node_btrfs_device_unused_bytes{job="node-exporter"} / node_btrfs_device_size_bytes{job="node-exporter"} * 100) < 1
                 labels:
                   severity: critical
+      node-memory-rules:
+        groups:
+          - name: node-memory
+            rules:
+              # Upstream NodeMemoryHighUtilization (disabled above) verbatim,
+              # except proxmox is excluded: it is deliberately provisioned to
+              # run near-full and alerts on it are noise, not signal.
+              - alert: NodeMemoryHighUtilization
+                annotations:
+                  description: |
+                    Memory is filling up at {{ $labels.instance }}, has been above 90% for the last 15 minutes, is currently at {{ printf "%.2f" $value }}%.
+                  runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodememoryhighutilization
+                  summary: Host is running out of memory.
+                expr: 100 - (node_memory_MemAvailable_bytes{job="node-exporter", instance!="proxmox.server.internal:9100"} / node_memory_MemTotal_bytes{job="node-exporter", instance!="proxmox.server.internal:9100"} * 100) > 90
+                for: 15m
+                labels:
+                  severity: warning
