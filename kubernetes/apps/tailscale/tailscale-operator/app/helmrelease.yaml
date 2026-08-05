@@ -1,0 +1,48 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: tailscale-operator
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: tailscale-operator
+      version: 1.98.9
+      sourceRef:
+        kind: HelmRepository
+        name: tailscale
+        namespace: tailscale
+      interval: 1h
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    # Left empty on purpose: the chart only templates its own `operator-oauth`
+    # Secret when oauth.clientId is set. Ours is committed as secret.sops.yaml
+    # under the same name so the credential stays in git, encrypted.
+    oauth: {}
+
+    operatorConfig:
+      hostname: home-ops-k8s-operator
+      defaultTags:
+        - tag:k8s-operator
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+        limits:
+          memory: 256Mi
+
+    proxyConfig:
+      defaultTags: tag:k8s
+
+    # The cluster is reached over the LAN and via kubeconfig; putting the API
+    # server on the tailnet is a separate decision from cross-site alerting.
+    apiServerProxyConfig:
+      mode: 'false'

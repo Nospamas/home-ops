@@ -2,24 +2,19 @@
 # yaml-language-server: $schema=https://json.schemastore.org/kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: observability
+namespace: tailscale
 components:
   - ../../components/common
-  - ../../components/repos/cluster-template
 resources:
-  - ./kube-prometheus-stack/ks.yaml
-  - ./grafana/ks.yaml
-  - ./gatus/ks.yaml
-  - ./ntfy/ks.yaml
-  - ./ntfy-alertmanager/ks.yaml
-  - ./tower-egress/ks.yaml
+  - ./tailscale-operator/ks.yaml
 patches:
-  # privileged on namespace for Intel GPU device plugin
+  # The operator's proxy Pods need NET_ADMIN and /dev/net/tun to program their
+  # own netfilter rules, which the cluster-default `baseline` PSA level forbids.
   - patch: |-
       apiVersion: v1
       kind: Namespace
       metadata:
-        name: system
+        name: not-used
         labels:
           pod-security.kubernetes.io/enforce: "privileged"
           pod-security.kubernetes.io/audit: "privileged"

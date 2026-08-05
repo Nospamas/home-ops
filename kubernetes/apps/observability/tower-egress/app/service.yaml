@@ -1,0 +1,25 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/master/service-v1.json
+apiVersion: v1
+kind: Service
+metadata:
+  name: tower
+  annotations:
+    # The tailscale operator replaces .spec.externalName with the DNS name of
+    # the egress proxy it spawns in the `tailscale` namespace, so in-cluster
+    # clients just talk to tower.observability.svc.cluster.local.
+    tailscale.com/tailnet-fqdn: tower.${TAILNET_DOMAIN}
+spec:
+  type: ExternalName
+  externalName: placeholder
+  # Only name/port/protocol are read; every port to be reached must be listed.
+  # Both of tower's services bind their ports directly rather than sitting
+  # behind tower's reverse proxy — routing the alert path through the proxy
+  # would mean a proxy outage silences the alert about the proxy outage.
+  ports:
+    - name: gatus
+      port: 8090
+      protocol: TCP
+    - name: ntfy
+      port: 8095
+      protocol: TCP

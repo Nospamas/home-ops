@@ -14,6 +14,23 @@ ui:
   title: Status | Home Ops
   header: Status
 
+alerting:
+  ntfy:
+    # This cluster's own ntfy, reached in-cluster. Never the envoy hostname: a
+    # Cloudflare Tunnel outage would take out both the services and the ability
+    # to report on them.
+    url: http://ntfy.observability.svc.cluster.local
+    topic: home-ops
+    priority: 4
+    priority-resolved: 2
+    click: https://status.${SECRET_DOMAIN}
+    # Applies to any endpoint that declares `alerts: [{type: ntfy}]`, including
+    # the ones the sidecar generates from the Gateways' endpoint annotation.
+    default-alert:
+      failure-threshold: 3
+      success-threshold: 2
+      send-on-resolved: true
+
 endpoints:
   - name: Cloudflare
     group: connectivity
@@ -21,6 +38,8 @@ endpoints:
     interval: 1m
     conditions:
       - '[CONNECTED] == true'
+    alerts:
+      - type: ntfy
 
   - name: Google
     group: connectivity
@@ -28,3 +47,61 @@ endpoints:
     interval: 1m
     conditions:
       - '[CONNECTED] == true'
+    alerts:
+      - type: ntfy
+
+  # The alert path itself. Probed in-cluster and directly, so that a failure of
+  # envoy or the tunnel shows up here as what it is rather than as everything
+  # being down at once.
+  - name: ntfy
+    group: alerting
+    url: http://ntfy.observability.svc.cluster.local/v1/health
+    interval: 1m
+    conditions:
+      - '[STATUS] == 200'
+      - '[BODY].healthy == true'
+    alerts:
+      - type: ntfy
+
+  - name: Alertmanager
+    group: alerting
+    url: http://alertmanager-operated.observability.svc.cluster.local:9093/-/healthy
+    interval: 1m
+    conditions:
+      - '[STATUS] == 200'
+    alerts:
+      - type: ntfy
+
+  # tower (unraid-ops). This is the half of the design that closes the blind
+  # spot: a monitoring stack hosted on the thing it monitors goes silent exactly
+  # when it matters, so each site watches the other. Reached over the tailnet
+  # via the egress Service in apps/observability/tower-egress.
+  #
+  # No ICMP check here, unlike the connectivity group above: a tailscale egress
+  # Service is an L4 ClusterIP, and ICMP is not forwarded through one. If tower
+  # is down or the tailnet path is broken, both probes below fail anyway.
+  #
+  # Deliberately more forgiving than the local checks — 5 failures at 2m is ~10
+  # minutes, against tower's 3-at-60s for its own local probes. The path between
+  # the two sites crosses the open internet, and a transient WAN blip is not
+  # tower dying.
+  - name: tower gatus
+    group: tower
+    url: http://tower.observability.svc.cluster.local:8090/health
+    interval: 2m
+    conditions:
+      - '[STATUS] == 200'
+    alerts: &tower-alert
+      - type: ntfy
+        failure-threshold: 5
+        success-threshold: 3
+        send-on-resolved: true
+
+  - name: tower ntfy
+    group: tower
+    url: http://tower.observability.svc.cluster.local:8095/v1/health
+    interval: 2m
+    conditions:
+      - '[STATUS] == 200'
+      - '[BODY].healthy == true'
+    alerts: *tower-alert
