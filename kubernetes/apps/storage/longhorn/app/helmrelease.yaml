@@ -27,6 +27,8 @@ spec:
     longhornUI:
       nodeSelector:
         longhorn-ui: "ui"
+    networkPolicies:
+      restrictInternalTraffic: false
     monitoring:
       enabled: true
       createPrometheusRules: true
