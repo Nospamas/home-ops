@@ -10,6 +10,9 @@ resources:
   - ./kube-prometheus-stack/ks.yaml
   - ./grafana/ks.yaml
   - ./gatus/ks.yaml
+  - ./ntfy/ks.yaml
+  - ./ntfy-alertmanager/ks.yaml
+  - ./tower-egress/ks.yaml
 patches:
   # privileged on namespace for Intel GPU device plugin
   - patch: |-

@@ -1,0 +1,108 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app ntfy
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  driftDetection:
+    mode: enabled
+  values:
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile: { type: RuntimeDefault }
+
+    controllers:
+      *app :
+        annotations:
+          reloader.stakater.com/auto: 'true'
+        containers:
+          app:
+            image:
+              repository: mirror.gcr.io/binwiederhier/ntfy
+              # renovate: datasource=docker depName=mirror.gcr.io/binwiederhier/ntfy
+              tag: v2.27.0@sha256:f2419f405127afa868f10985c1a41449e673477cee1eb19994339a5ae8b592e7
+            args: ['serve']
+            env:
+              TZ: ${CLUSTER_TIMEZONE}
+              # Must match the address the phone actually subscribes to, or every
+              # link in a notification points somewhere unreachable. This is the
+              # tailnet name the operator gives the Service below — deliberately
+              # not an envoy hostname: a Cloudflare Tunnel outage would otherwise
+              # take out both the services and the ability to report on them.
+              NTFY_BASE_URL: http://ntfy.${TAILNET_DOMAIN}
+              NTFY_LISTEN_HTTP: :8080
+              NTFY_CACHE_FILE: /var/cache/ntfy/cache.db
+              # A week of history, so a phone that was off during an incident
+              # still gets the backlog on reconnect.
+              NTFY_CACHE_DURATION: 168h
+              NTFY_ATTACHMENT_CACHE_DIR: /var/cache/ntfy/attachments
+              # Matches tower: the tailnet is the trust boundary, and nothing
+              # reaches this Service without already being on it. No auth-file,
+              # so there are no users and no credential to rotate.
+              NTFY_AUTH_DEFAULT_ACCESS: read-write
+              NTFY_ENABLE_SIGNUP: 'false'
+              NTFY_ENABLE_LOGIN: 'false'
+              NTFY_BEHIND_PROXY: 'false'
+              NTFY_LOG_LEVEL: info
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /v1/health
+                    port: &port 8080
+                  initialDelaySeconds: 10
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ['ALL'] }
+            resources:
+              requests:
+                cpu: 10m
+                memory: 64Mi
+              limits:
+                memory: 256Mi
+
+    service:
+      app:
+        annotations:
+          # Puts the Service on the tailnet as ntfy.${TAILNET_DOMAIN}, via the
+          # operator in apps/tailscale. See docs/adr/0005. tower's ntfy is not
+          # its own tailnet device (it binds a port on the `tower` node), so the
+          # bare name is free and unambiguous.
+          #
+          # Changing this renames the device in place — the proxy StatefulSet
+          # keeps its state Secret and node key — but NTFY_BASE_URL above and
+          # every phone subscription must move with it or notification links
+          # break.
+          tailscale.com/expose: 'true'
+          tailscale.com/hostname: ntfy
+        ports:
+          http:
+            port: 80
+            targetPort: *port
+
+    persistence:
+      cache:
+        existingClaim: *app
+        globalMounts:
+          - path: /var/cache/ntfy
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp

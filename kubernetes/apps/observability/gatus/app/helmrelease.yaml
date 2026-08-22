@@ -17,6 +17,8 @@ spec:
 
     gatus:
       delayStartSeconds: '5'
+      env:
+        SECRET_DOMAIN: ${SECRET_DOMAIN}
 
     # Auto-generate endpoints from cluster resources annotated with
     # gatus.home-operations.com/endpoint (HTTPRoutes are opted in by default).

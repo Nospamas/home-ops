@@ -69,6 +69,16 @@
           type: tautulli
           url: http://tautulli.media.svc.cluster.local.:80
           key: '{{HOMEPAGE_VAR_TAUTULLI_TOKEN}}'
+- Observability:
+    # Not discovered from an HTTPRoute like the rest of this group: ntfy is
+    # published on the tailnet rather than through envoy, so that a Cloudflare
+    # Tunnel outage cannot take out the thing that would report it.
+    - ntfy:
+        icon: ntfy.svg
+        href: http://ntfy.${TAILNET_DOMAIN}
+        description: Alert notifications (tailnet only)
+        app: ntfy
+        namespace: observability
 - Infrastructure:
     - Unifi:
         icon: unifi.svg

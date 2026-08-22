@@ -1,0 +1,22 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/master/service-v1.json
+apiVersion: v1
+kind: Service
+metadata:
+  name: gatus-tailnet
+  annotations:
+    # A second Service alongside the chart's own, so tower can probe this
+    # cluster's gatus at home-ops-gatus.${TAILNET_DOMAIN} without the request
+    # traversing envoy or the Cloudflare Tunnel. Routing the alert path through
+    # those would mean an outage there silences the alert about it.
+    tailscale.com/expose: 'true'
+    tailscale.com/hostname: home-ops-gatus
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/instance: gatus
+    app.kubernetes.io/name: gatus
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080

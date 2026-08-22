@@ -1,0 +1,132 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app ntfy-alertmanager
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  driftDetection:
+    mode: enabled
+  values:
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile: { type: RuntimeDefault }
+
+    controllers:
+      *app :
+        annotations:
+          reloader.stakater.com/auto: 'true'
+        containers:
+          app:
+            image:
+              repository: mirror.gcr.io/xenrox/ntfy-alertmanager
+              # renovate: datasource=docker depName=mirror.gcr.io/xenrox/ntfy-alertmanager
+              tag: 1.0.0@sha256:81788c7905774b7b0b2ed6833b2bc4826a90a42e4b738706edcedd5f489e7a73
+            env:
+              TZ: ${CLUSTER_TIMEZONE}
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: &port 8080
+                  initialDelaySeconds: 5
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ['ALL'] }
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
+
+    service:
+      app:
+        ports:
+          http:
+            port: *port
+
+    # Alertmanager has no ntfy receiver, and its generic webhook body is a fixed
+    # JSON blob that reads as line noise on a phone. This bridge turns it into a
+    # real notification: severity -> ntfy priority, emoji tags, markdown body.
+    configMaps:
+      config:
+        data:
+          config.scfg: |
+            http-address :8080
+            log-level info
+            log-format json
+
+            # One notification per alert rather than per Alertmanager group, so
+            # the title names the alert instead of an alert count.
+            alert-mode single
+
+            labels {
+                order "severity"
+
+                severity "critical" {
+                    priority 5
+                    tags "rotating_light"
+                }
+
+                severity "warning" {
+                    priority 4
+                    tags "warning"
+                }
+
+                severity "info" {
+                    priority 2
+                    tags "information_source"
+                }
+            }
+
+            resolved {
+                update-notification true
+                tags "white_check_mark"
+                priority 2
+            }
+
+            ntfy {
+                server http://ntfy.observability.svc.cluster.local
+                topic home-ops
+                markdown true
+                # Button linking back to the firing expression in Prometheus.
+                # prometheusSpec.externalUrl is an envoy-internal hostname, so
+                # this resolves on the LAN and not from the wider internet.
+                generator-url-label source
+            }
+
+            # No `alertmanager` block on purpose. Its Silence button proxies the
+            # API call back through this service, which would mean publishing
+            # base-url somewhere the phone can reach — a third tailnet device to
+            # keep alive for a convenience button. Silence from the Alertmanager
+            # UI instead.
+
+            cache {
+                type memory
+                duration 24h
+                cleanup-interval 1h
+            }
+
+    persistence:
+      config-file:
+        type: configMap
+        identifier: config
+        globalMounts:
+          - path: /etc/ntfy-alertmanager/config
+            subPath: config.scfg
+            readOnly: true

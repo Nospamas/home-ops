@@ -8,6 +8,7 @@ spec:
   schedule: 0 * * * *
   discoveryFilters:
     - nospamas/home-ops
+    - nospamas/unraid-ops
   provider:
     name: github
   extraEnv:
@@ -15,7 +16,30 @@ spec:
       value: "true"
     # - name: RENOVATE_LOG_LEVEL
     #   value: debug
-  image: ghcr.io/renovatebot/renovate:44.5.3
+    # Persist lookup caches between runs; all globalOnly, so they live here.
+    - name: RENOVATE_CACHE_DIR
+      value: /cache
+    - name: RENOVATE_REPOSITORY_CACHE
+      value: enabled
+    # Only these four default to 30m; the other docker namespaces cache longer.
+    - name: RENOVATE_CACHE_TTL_OVERRIDE
+      value: >-
+        {"datasource-docker-tags": 1440, "datasource-docker-hub-tags": 1440,
+        "datasource-docker-releases-v2": 1440, "datasource-docker-digest": 1440}
+    # Stale-on-error retention; == the upstream default, pinned.
+    - name: RENOVATE_CACHE_HARD_TTL_MINUTES
+      value: "10080"
+    # lscr.io pages oldest-first and is capped by this
+    - name: RENOVATE_DOCKER_MAX_PAGES
+      value: "100"
+  extraVolumes:
+    - name: cache
+      persistentVolumeClaim:
+        claimName: renovate-cache
+  extraVolumeMounts:
+    - name: cache
+      mountPath: /cache
+  image: ghcr.io/renovatebot/renovate:44.39.1
   parallelism: 5
   resources:
     requests:

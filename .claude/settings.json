@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(kubectl -n tailscale get pods)",
+      "Bash(kubectl -n observability exec deploy/gatus -c gatus -- wget -qO- --timeout=8 http://tower.observability.svc.cluster.local:8090/health)",
+      "Bash(kubectl -n observability exec deploy/gatus -c gatus -- wget -qO- --timeout=8 http://tower.observability.svc.cluster.local:8095/v1/health)",
+      "Bash(python3 -c ' *)",
+      "Bash(kubectl -n observability exec deploy/gatus -c gatus-sidecar -- cat /config/gatus-sidecar.yaml)",
+      "Bash(kubectl -n observability exec deploy/gatus -c gatus-sidecar -- sh -c 'cat /config/gatus-sidecar.yaml')",
+      "Bash(kubectl -n observability exec sts/alertmanager-kube-prometheus-stack -c alertmanager -- sh -c 'cat /etc/alertmanager/config_out/alertmanager.env.yaml')",
+      "Bash(kubectl -n observability logs deploy/ntfy-alertmanager --tail=10)",
+      "Bash(kubectl -n observability logs deploy/ntfy-alertmanager --tail=5)",
+      "Bash(kubectl -n observability get pod -l app.kubernetes.io/name=ntfy -o jsonpath='{.items[0].status.containerStatuses[0].state.running.startedAt}{\"\\\\n\"}')",
+      "Bash(kubectl -n observability exec deploy/ntfy-alertmanager -- sh -c 'exit 0')",
+      "Bash(curl -s -m 10 -o /dev/null -w \"ntfy tailnet publish endpoint reachable: %{http_code}\\\\n\" \"http://home-ops-ntfy.gute-morpho.ts.net/v1/health\")"
+    ]
+  }
+}

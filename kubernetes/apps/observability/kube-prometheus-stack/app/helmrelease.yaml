@@ -17,6 +17,18 @@ spec:
         enabled: true
         forceConflicts: true
     cleanPrometheusOperatorObjectNames: true
+    defaultRules:
+      disabled:
+        # Talos' own control-plane controllers talk to the apiserver with
+        # 10-minute client certs they mint on demand. They are ~0.5-7% of
+        # apiserver requests, so the rule's 1st-percentile straddles them and
+        # flips between "6 minutes left" and "360 days left" as traffic moves.
+        # Replaced below by kubelet-cert-rules, which reads real per-node TTLs.
+        KubeClientCertificateExpiration: true
+        # Upstream's rule is ZFS-ARC-blind, which misreads ARC-heavy hosts as
+        # nearly out of memory. Replaced below by node-memory-rules, which
+        # counts reclaimable ARC as available.
+        NodeMemoryHighUtilization: true
     alertmanager:
       route:
         main:
@@ -83,7 +95,7 @@ spec:
         image:
           registry: docker.io
           repository: prompp/prompp
-          tag: 0.8.6
+          tag: 0.8.9
         securityContext:
           runAsNonRoot: true
           runAsUser: 64535
@@ -134,6 +146,26 @@ spec:
                 expr: count (count by (image) (time() - container_last_seen{image=~"(docker.io).*",container!=""} < 30)) > 25
                 labels:
                   severity: critical
+      kubelet-cert-rules:
+        groups:
+          - name: kubelet-certs
+            rules:
+              - alert: KubeletClientCertificateExpiration
+                annotations:
+                  summary: The kubelet client certificate on {{ $labels.node }} expires in {{ $value | humanizeDuration }} and has not been rotated.
+                  description: Talos rotates the kubelet client certificate well before expiry; a TTL this low means rotation is failing on that node.
+                expr: kubelet_certificate_manager_client_ttl_seconds < 7 * 24 * 60 * 60
+                for: 15m
+                labels:
+                  severity: warning
+              - alert: KubeletClientCertificateExpiration
+                annotations:
+                  summary: The kubelet client certificate on {{ $labels.node }} expires in {{ $value | humanizeDuration }} and has not been rotated.
+                  description: Talos rotates the kubelet client certificate well before expiry; a TTL this low means rotation is failing on that node.
+                expr: kubelet_certificate_manager_client_ttl_seconds < 24 * 60 * 60
+                for: 15m
+                labels:
+                  severity: critical
       oom-rules:
         groups:
           - name: oom
@@ -160,3 +192,59 @@ spec:
                 expr: (node_btrfs_device_unused_bytes{job="node-exporter"} / node_btrfs_device_size_bytes{job="node-exporter"} * 100) < 1
                 labels:
                   severity: critical
+      node-memory-rules:
+        groups:
+          - name: node-memory
+            rules:
+              # Replaces upstream NodeMemoryHighUtilization (disabled above),
+              # which is ARC-blind. ZFS ARC is reclaimable under pressure, but
+              # Linux does not count it in MemAvailable, so an ARC-heavy host
+              # reads as nearly full when it is nearly empty: truenas measures
+              # 90.9% on the upstream rule and 9.7% here.
+              #
+              # ARC only gives memory back down to its c_min floor, so only the
+              # amount above c_min is genuinely reclaimable. clamp_min guards
+              # hosts whose ARC currently sits *below* c_min, where the
+              # subtraction would otherwise go negative and push utilisation
+              # over 100%. The `or ... * 0` arm contributes zero on non-ZFS
+              # hosts, which expose no node_zfs_* series at all.
+              #
+              # proxmox is excluded rather than corrected: its ARC is empty and
+              # the ~59GiB in use is anonymous VM memory, genuinely committed
+              # and not reclaimable. It is deliberately provisioned that way and
+              # has been stable, so ARC-awareness does not help it. It gets its
+              # own higher threshold in the rule below instead.
+              - alert: NodeMemoryHighUtilization
+                annotations:
+                  description: |
+                    Memory is filling up at {{ $labels.instance }}, has been above 90% for the last 15 minutes, is currently at {{ printf "%.2f" $value }}% (ZFS ARC above c_min counted as available).
+                  runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodememoryhighutilization
+                  summary: Host is running out of memory.
+                expr: |
+                  100 - ((
+                    node_memory_MemAvailable_bytes{job="node-exporter", instance!="proxmox.server.internal:9100"}
+                    + (
+                        clamp_min(node_zfs_arc_size - node_zfs_arc_c_min, 0)
+                        or (node_memory_MemAvailable_bytes{job="node-exporter", instance!="proxmox.server.internal:9100"} * 0)
+                      )
+                  ) / node_memory_MemTotal_bytes{job="node-exporter", instance!="proxmox.server.internal:9100"} * 100) > 90
+                for: 15m
+                labels:
+                  severity: warning
+              # proxmox runs deliberately near-full on committed VM memory, so
+              # the 90% threshold above is meaningless for it — but leaving it
+              # unmonitored is a blind spot. 99.5% is picked from 30d of its own
+              # history: sustained-15m utilisation ranged 98.12-99.41%, so this
+              # would have fired zero times, while 99% would have fired 187
+              # times and 99.3% still 76. When it does fire, under ~320MiB of
+              # 62.7GiB remains, which is genuinely close to trouble.
+              - alert: NodeMemoryHighUtilization
+                annotations:
+                  description: |
+                    Memory is filling up at {{ $labels.instance }}, has been above 99.5% for the last 15 minutes, is currently at {{ printf "%.2f" $value }}%. This host normally sits near 98.7%, so it is committing meaningfully more than usual.
+                  runbook_url: https://runbooks.prometheus-operator.dev/runbooks/node/nodememoryhighutilization
+                  summary: Host is running out of memory.
+                expr: 100 - (node_memory_MemAvailable_bytes{job="node-exporter", instance="proxmox.server.internal:9100"} / node_memory_MemTotal_bytes{job="node-exporter", instance="proxmox.server.internal:9100"} * 100) > 99.5
+                for: 15m
+                labels:
+                  severity: warning
