@@ -34,11 +34,25 @@ spec:
                 "namespace": "network",
                 "ips": ["${IP_IOT_HOME_ASSISTANT}/16", "${IP6_IOT_HOME_ASSISTANT}/64"]
               }]
-        containers:
-          app:
-            image:
+        initContainers:
+          seed-http:
+            image: &image
               repository: ghcr.io/home-operations/home-assistant
               tag: 2026.8.2@sha256:84f5b1b26e1597a3d5a19a7b6e2ed085ec8e3fffcbe46049acf62f9e25ea400e
+            command: ["/bin/sh", "/seed/seed-http.sh"]
+            securityContext: &securityContext
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 64Mi
+        containers:
+          app:
+            image: *image
             env:
               TZ: ${CLUSTER_TIMEZONE}
               HOME_ASSISTANT__HACS_INSTALL: "true"
@@ -50,11 +64,7 @@ spec:
             envFrom:
               - secretRef:
                   name: home-assistant-secret
-            securityContext:
-              allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
-              capabilities:
-                drop: ["ALL"]
+            securityContext: *securityContext
             resources:
               requests:
                 cpu: 10m
@@ -156,17 +166,27 @@ spec:
       config:
         type: configMap
         name: home-assistant-configmap
-        globalMounts:
-          - path: /config/configuration.yaml
-            subPath: configuration.yaml
+        advancedMounts:
+          home-assistant:
+            seed-http:
+              - path: /seed/http.json
+                subPath: http.json
+                readOnly: true
+              - path: /seed/seed-http.sh
+                subPath: seed-http.sh
+                readOnly: true
+            app: &config-mount
+              - path: /config/configuration.yaml
+                subPath: configuration.yaml
+            code-server: *config-mount
       data:
         existingClaim: *app
         advancedMounts:
           home-assistant:
-            app:
+            seed-http: &data-mount
               - path: /config
-            code-server:
-              - path: /config
+            app: *data-mount
+            code-server: *data-mount
       cache:
         size: 2Gi
         accessMode: ReadWriteOnce

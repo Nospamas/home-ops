@@ -9,5 +9,7 @@ configMapGenerator:
   - name: home-assistant-configmap
     files:
       - ./resources/configuration.yaml
+      - ./resources/http.json
+      - ./resources/seed-http.sh
 configurations:
   - ./resources/kustomizeconfig.yaml
