@@ -1,4 +1,4 @@
-# from https://github.com/kubevirt/kubevirt/releases/download/v1.6.1/kubevirt-operator.yaml
+# from https://github.com/kubevirt/kubevirt/releases/download/v1.6.6/kubevirt-operator.yaml
 ---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
@@ -352,6 +352,7 @@ spec:
                           "see" 2% more memory than its parent pod. Values under 100 are effectively "undercommits".
                           Overcommits can lead to memory exhaustion, which in turn can lead to crashes. Use carefully.
                           Defaults to 100
+                        minimum: 10
                         type: integer
                       minimumClusterTSCFrequency:
                         description: |-
@@ -3631,6 +3632,7 @@ spec:
                           "see" 2% more memory than its parent pod. Values under 100 are effectively "undercommits".
                           Overcommits can lead to memory exhaustion, which in turn can lead to crashes. Use carefully.
                           Defaults to 100
+                        minimum: 10
                         type: integer
                       minimumClusterTSCFrequency:
                         description: |-
@@ -7398,6 +7400,7 @@ rules:
   - virtualmachineinstances
   verbs:
   - update
+  - patch
   - list
   - watch
 - apiGroups:
@@ -7449,6 +7452,12 @@ rules:
   - list
   - watch
 - apiGroups:
+  - apps
+  resources:
+  - controllerrevisions
+  verbs:
+  - get
+- apiGroups:
   - export.kubevirt.io
   resources:
   - virtualmachineexports
@@ -7481,6 +7490,8 @@ rules:
   - get
   - list
   - watch
+  - patch
+  - delete
 - apiGroups:
   - kubevirt.io
   resources:
@@ -8029,14 +8040,14 @@ spec:
         - virt-operator
         env:
         - name: VIRT_OPERATOR_IMAGE
-          value: quay.io/kubevirt/virt-operator:v1.6.1
+          value: quay.io/kubevirt/virt-operator:v1.6.6
         - name: WATCH_NAMESPACE
           valueFrom:
             fieldRef:
               fieldPath: metadata.annotations['olm.targetNamespaces']
         - name: KUBEVIRT_VERSION
-          value: v1.6.1
-        image: quay.io/kubevirt/virt-operator:v1.9.0
+          value: v1.6.6
+        image: quay.io/kubevirt/virt-operator:v1.6.6
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
