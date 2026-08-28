@@ -15,6 +15,6 @@ spec:
       manufacturer: "Talos Virtualization"
       product: "talosvm"
       family: "ccio"
-  # Off: v1.6->v1.7 launcher migration fails on virtio features
   workloadUpdateStrategy:
-    workloadUpdateMethods: []
+    workloadUpdateMethods:
+      - LiveMigrate
