@@ -30,6 +30,21 @@
   },
   packageRules: [
     {
+      description: "KubeVirt must be upgraded one minor at a time; raise this cap per stage",
+      matchDatasources: ["github-releases"],
+      matchPackageNames: ["kubevirt/kubevirt"],
+      allowedVersions: "<1.7.0",
+    },
+    {
+      description: "Vendored operator manifests are version-pinned as a whole file",
+      matchManagers: ["kubernetes", "flux"],
+      matchFileNames: [
+        "kubernetes/apps/virtualization/cdi/app/manifests.yaml",
+        "kubernetes/apps/virtualization/kubevirt/app/operator.yaml",
+      ],
+      enabled: false,
+    },
+    {
       description: "Override Helmfile Dependency Name",
       matchDatasources: ["docker"],
       matchManagers: ["helmfile"],
@@ -138,6 +153,34 @@
     },
   ],
   customManagers: [
+    {
+      description: "Vendored CDI operator manifest - bump every version string together",
+      customType: "regex",
+      managerFilePatterns: [
+        "/^kubernetes/apps/virtualization/cdi/app/manifests\\.yaml$/",
+      ],
+      matchStrings: [
+        "containerized-data-importer/releases/download/(?<currentValue>v[^/]+)/",
+        "quay\\.io/kubevirt/cdi-[a-z]+:(?<currentValue>v\\S+)",
+        "name: OPERATOR_VERSION\\n\\s+value: (?<currentValue>v\\S+)",
+      ],
+      depNameTemplate: "kubevirt/containerized-data-importer",
+      datasourceTemplate: "github-releases",
+    },
+    {
+      description: "Vendored KubeVirt operator manifest - bump every version string together",
+      customType: "regex",
+      managerFilePatterns: [
+        "/^kubernetes/apps/virtualization/kubevirt/app/operator\\.yaml$/",
+      ],
+      matchStrings: [
+        "kubevirt/kubevirt/releases/download/(?<currentValue>v[^/]+)/",
+        "quay\\.io/kubevirt/virt-operator:(?<currentValue>v\\S+)",
+        "name: KUBEVIRT_VERSION\\n\\s+value: (?<currentValue>v\\S+)",
+      ],
+      depNameTemplate: "kubevirt/kubevirt",
+      datasourceTemplate: "github-releases",
+    },
     {
       description: "Process annotated dependencies",
       customType: "regex",
