@@ -7,3 +7,4 @@ resources:
 - ./service.yaml
 - ./instance.yaml
 - ./storageprofile.yaml
+- ./storageprofile-longhorn.yaml

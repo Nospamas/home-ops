@@ -1,0 +1,27 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/cdi.kubevirt.io/storageprofile_v1beta1.json
+apiVersion: cdi.kubevirt.io/v1beta1
+kind: StorageProfile
+metadata:
+  name: longhorn
+# CDI infers claim properties per StorageClass and only ever derives
+# ReadWriteOnce for driver.longhorn.io, so every Longhorn profile reports
+# rwx=false. Since `longhorn` is the cluster default StorageClass, that makes
+# CDIDefaultStorageClassDegraded fire permanently ("no smart clone or
+# ReadWriteMany") even though smart clone is available.
+#
+# Longhorn does serve ReadWriteMany here, via its share-manager: immich,
+# syncthing, renovate-cache and this namespace's own ubuntu-dev disk are all
+# bound RWX/Filesystem on Longhorn StorageClasses today. Declaring it is the
+# documented override, same as the openebs-hostpath profile alongside this one.
+#
+# RWX/Filesystem is listed first deliberately: a VM disk must be RWX to be
+# live-migratable, so it is what CDI should pick by default for DataVolumes.
+spec:
+  claimPropertySets:
+    - accessModes: ['ReadWriteMany']
+      volumeMode: Filesystem
+    - accessModes: ['ReadWriteOnce']
+      volumeMode: Block
+    - accessModes: ['ReadWriteOnce']
+      volumeMode: Filesystem
