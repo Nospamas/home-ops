@@ -15,6 +15,6 @@ spec:
       manufacturer: "Talos Virtualization"
       product: "talosvm"
       family: "ccio"
-  # Off: host-model CPU breaks cross-version launcher migration
+  # Off: host-model CPU breaks cross-version migration; restart VMs to update
   workloadUpdateStrategy:
     workloadUpdateMethods: []
