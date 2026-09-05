@@ -39,7 +39,7 @@ spec:
   extraVolumeMounts:
     - name: cache
       mountPath: /cache
-  image: ghcr.io/renovatebot/renovate:44.39.1
+  image: ghcr.io/renovatebot/renovate:44.65.5
   parallelism: 5
   resources:
     requests:
