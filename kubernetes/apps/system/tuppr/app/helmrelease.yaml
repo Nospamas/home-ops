@@ -9,6 +9,15 @@ spec:
   chartRef:
     kind: OCIRepository
     name: *app
+  install:
+    crds: CreateReplace
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    crds: CreateReplace
+    remediation:
+      retries: 3
   values:
     replicaCount: 2
     monitoring:
