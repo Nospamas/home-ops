@@ -1,0 +1,5 @@
+---
+machine:
+  install:
+    diskSelector:
+      serial: "23253E802750"

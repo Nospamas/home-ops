@@ -1,0 +1,6 @@
+# Talos ≥1.14 machinery adds this; talhelper's did not
+---
+machine:
+  nodeLabels:
+    node.kubernetes.io/exclude-from-external-load-balancers:
+      $patch: delete

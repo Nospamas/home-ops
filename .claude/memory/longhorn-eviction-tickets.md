@@ -65,4 +65,4 @@ Recovery (extends the cascade in [[volsync-behaviour]]):
 
 ## Relationship to other notes
 
-See [[longhorn-drain]] for drain policy and [[volsync-behaviour]] for mover-pod behaviour. Disks are declared in `talos/talconfig.yaml` and applied via the `node.longhorn.io/default-disks-config` annotation (`createDefaultDiskLabeledNodes: true`) — but that annotation only takes effect at **first registration**, so `allowScheduling`/`evictionRequested` changes made in the Longhorn UI are **not** reflected in the repo and won't be reverted by Flux.
+See [[longhorn-drain]] for drain policy and [[volsync-behaviour]] for mover-pod behaviour. Disks are declared in `talos/patches/control-plane/04-longhorn-node.yaml` (and `worker/02-longhorn-node.yaml`) and applied via the `node.longhorn.io/default-disks-config` annotation (`createDefaultDiskLabeledNodes: true`) — but that annotation only takes effect at **first registration**, so `allowScheduling`/`evictionRequested` changes made in the Longhorn UI are **not** reflected in the repo and won't be reverted by Flux.

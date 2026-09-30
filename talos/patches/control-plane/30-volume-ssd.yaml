@@ -1,0 +1,8 @@
+---
+apiVersion: v1alpha1
+kind: ExistingVolumeConfig
+name: host-ssd # Name of the volume.
+# The discovery describes how to find a volume.
+discovery:
+  volumeSelector:
+    match: disk.transport == 'sata' && volume.name == 'xfs'

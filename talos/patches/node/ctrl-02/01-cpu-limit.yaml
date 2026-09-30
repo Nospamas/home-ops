@@ -1,3 +1,4 @@
+---
 machine:
   sysfs:
     devices.system.cpu.cpu0.cpufreq.scaling_max_freq: "3960000"

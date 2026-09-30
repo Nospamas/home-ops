@@ -1,0 +1,5 @@
+# talhelper dropped `transport: usb`; empty selector preserved
+---
+machine:
+  install:
+    diskSelector: {}

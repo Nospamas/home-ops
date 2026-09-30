@@ -1,0 +1,22 @@
+---
+machine:
+  nodeLabels:
+    longhorn-manager: "manager"
+    longhorn-driver: "driver"
+    longhorn-ui: "ui"
+    node.longhorn.io/create-default-disk: 'config'
+  nodeAnnotations:
+    node.longhorn.io/default-disks-config: '[{
+        "name":"longhorn-nvme",
+        "path":"/var/mnt/host-nvme/",
+        "storageReserved":0,
+        "tags": ["ultra-fast", "ssd"],
+        "allowScheduling":true
+      },
+      {
+        "name":"longhorn-ssd",
+        "path":"/var/mnt/host-ssd/",
+        "storageReserved":0,
+        "tags": ["fast", "ssd"],
+        "allowScheduling":true
+      }]'

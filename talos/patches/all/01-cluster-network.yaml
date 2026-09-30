@@ -1,0 +1,11 @@
+---
+cluster:
+  network:
+    cni:
+      name: none
+    podSubnets:
+      - 10.42.0.0/16
+      - fd00:10:42::/56
+    serviceSubnets:
+      - 10.43.0.0/16
+      - fd00:10:43::/112

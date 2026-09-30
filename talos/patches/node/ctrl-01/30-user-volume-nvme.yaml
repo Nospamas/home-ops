@@ -1,0 +1,10 @@
+# talhelper's anchor gave ctrl-01 alone a selector without usb
+---
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: host-nvme
+provisioning:
+  diskSelector:
+    match: (disk.transport == 'nvme' || disk.transport == 'virtio') && system_disk
+  minSize: 100Gi
+  grow: true

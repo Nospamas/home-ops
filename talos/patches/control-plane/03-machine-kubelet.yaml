@@ -1,4 +1,5 @@
 # kubelet mounts for control-plane
+---
 machine:
   sysctls:
     vm.nr_hugepages: "2048"

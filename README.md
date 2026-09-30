@@ -151,7 +151,7 @@ There are **5 stages** outlined below for completing this project, make sure you
 
     ```sh
     git add -A
-    git commit -m "chore: add talhelper encrypted secret :lock:"
+    git commit -m "chore: add topf encrypted secret :lock:"
     git push
     ```
 
@@ -262,26 +262,27 @@ task talos:reset
 ### ⚙️ Updating Talos node configuration
 
 > [!TIP]
-> Ensure you have updated `talconfig.yaml` and any patches with your updated configuration. In some cases you **not only need to apply the configuration but also upgrade talos** to apply new configuration.
+> Ensure you have updated `topf.yaml` and any patches with your updated configuration. In some cases you **not only need to apply the configuration but also upgrade talos** to apply new configuration.
 
 ```sh
-# (Re)generate the Talos config
+# Render the Talos configs to talos/output for inspection (optional)
 task talos:generate-config
-# Apply the config to the node
-task talos:apply-node IP=? MODE=?
-# e.g. task talos:apply-node IP=10.10.10.10 MODE=auto
+# Preview what would change on every node
+task talos:diff
+# Apply the config to a node
+task talos:apply-node HOST=?
+# e.g. task talos:apply-node HOST=ctrl-01
 ```
 
 ### ⬆️ Updating Talos and Kubernetes versions
 
 > [!TIP]
-> Ensure the `talosVersion` and `kubernetesVersion` in `talenv.yaml` are up-to-date with the version you wish to upgrade to.
+> Ensure the `talosVersion` and `kubernetesVersion` in `talos/topf.yaml` are up-to-date with the version you wish to upgrade to.
 
-```sh
-# Upgrade node to a newer Talos version
-task talos:upgrade-node IP=?
-# e.g. task talos:upgrade-node IP=10.10.10.10
-```
+Upgrades are driven in-cluster by [tuppr](https://github.com/home-operations/tuppr), not from
+here — commit the version bump alongside the matching bump in
+`kubernetes/apps/system/tuppr/upgrades/` and let Flux reconcile it. `topf` also has its own
+`upgrade` command if you ever need to drive a node by hand.
 
 ```sh
 # Upgrade cluster to a newer Kubernetes version

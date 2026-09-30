@@ -2,7 +2,7 @@ This is a Kubernetes Flux GitOps repo. Inspect the cluster via `kubectl`, config
 
 Don't modify the cluster by directly applying — make code changes and reconcile via Flux. The user commits changes; ask them to review before that stage.
 
-Talos node configs live in `talos/` and are compiled with `talhelper` into `talos/clusterconfig/`. `talhelper genconfig` requires the SOPS age key — must be run by the user.
+Talos node configs live in `talos/` and are rendered by `topf` into `talos/output/` (gitignored). `topf render` requires the SOPS age key — must be run by the user. `talos/topf.yaml` holds the cluster and node list, `talos/schematics/` the Image Factory schematics, `talos/patches/{all,control-plane,worker,node/<host>}/` the layered patches.
 
 Namespaces: `storage` contains Longhorn and Volsync. Components shared across apps are in `kubernetes/components/`.
 

@@ -1,6 +1,11 @@
+---
 cluster:
   allowSchedulingOnControlPlanes: true
   apiServer:
+    certSANs:
+      - 127.0.0.1
+      - 192.168.0.254
+      - k8s.cansk.net
     extraArgs:
       # https://kubernetes.io/docs/tasks/extend-kubernetes/configure-aggregation-layer/
       enable-aggregator-routing: true
@@ -20,4 +25,3 @@ cluster:
   scheduler:
     extraArgs:
       bind-address: 0.0.0.0
-

@@ -1,0 +1,5 @@
+---
+apiVersion: v1alpha1
+kind: Layer2VIPConfig
+name: 192.168.0.254
+link: br0

@@ -1,0 +1,9 @@
+---
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: host-nvme
+provisioning:
+  diskSelector:
+    match: (disk.transport == 'nvme' || disk.transport == 'virtio' || disk.transport == 'usb') && system_disk
+  minSize: 100Gi
+  grow: true

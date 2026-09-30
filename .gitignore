@@ -13,6 +13,8 @@
 # Kubernetes
 kubeconfig
 talosconfig
+# Rendered Talos machine configs (contain cluster secrets)
+/talos/output/
 # Misc.
 .private/
 .task/

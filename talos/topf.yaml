@@ -1,0 +1,29 @@
+---
+clusterName: kubernetes
+clusterEndpoint: https://192.168.0.254:6443
+
+# renovate: datasource=docker depName=factory.talos.dev/metal-installer/65cf8364cd0de4cf7b851dc7067a2db83d0ba04f11d8635c6cd3334be6ffb825
+talosVersion: v1.13.7
+# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+kubernetesVersion: v1.36.4
+
+secretsPath: secrets.sops.yaml
+patchesDir: patches
+schematicId: "@schematics/default.yaml"
+
+nodes:
+  - host: ctrl-01
+    ip: 192.168.0.1
+    role: control-plane
+  - host: ctrl-02
+    ip: 192.168.0.2
+    role: control-plane
+    schematicId: "@schematics/ctrl-02.yaml"
+  - host: ctrl-03
+    ip: 192.168.0.3
+    role: control-plane
+  - host: work-01
+    ip: 192.168.0.4
+    role: worker
+    platform: nocloud
+    schematicId: "@schematics/work-01.yaml"

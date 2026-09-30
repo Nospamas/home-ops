@@ -1,4 +1,5 @@
-#kubelet worker mounts
+# kubelet mounts for workers
+---
 machine:
   kubelet:
     extraMounts:
