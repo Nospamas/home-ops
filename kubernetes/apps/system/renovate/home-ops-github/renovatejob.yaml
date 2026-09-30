@@ -14,8 +14,8 @@ spec:
   extraEnv:
     - name: RENOVATE_ALLOW_PLUGINS
       value: "true"
-    # - name: RENOVATE_LOG_LEVEL
-    #   value: debug
+    - name: RENOVATE_LOG_LEVEL
+      value: debug
     # Persist lookup caches between runs; all globalOnly, so they live here.
     - name: RENOVATE_CACHE_DIR
       value: /cache
