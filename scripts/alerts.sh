@@ -36,24 +36,30 @@ curl -s "http://127.0.0.1:${ALERTMANAGER_PORT}/api/v2/alerts?active=true&silence
             .labels.alertname,
             (.startsAt | sub("\\.[0-9]+";"") | fromdate | strflocaltime("%m-%d %H:%M")),
             (.labels | to_entries
-                     | map(select(.key | test("^(namespace|pod|node|instance|name|job_name|device|container)$")))
+                     | map(select(.key | test("^(namespace|pod|node|instance|name|job_name|device|container|obj_namespace|obj_name)$")))
                      | map("\(.key)=\(.value)") | join(" "))
           ] | @tsv' |
     column -t -s $'\t'
 
 echo
-echo "=== ntfy home-ops, last ${SINCE}, by title ==="
+echo "=== ntfy home-ops, last ${SINCE}, by alert ==="
 notifications=$(curl -s "http://127.0.0.1:${NTFY_PORT}/home-ops/json?poll=1&since=${SINCE}")
 
-# ntfy-alertmanager runs in alert-mode single, so a title is one alert instance:
-# collapsing on it turns a flapping endpoint into a single line with a count.
-jq -r 'select(.event == "message") | .title' <<<"$notifications" |
-    sed -E 's/^\[(FIRING|RESOLVED)\] //' |
-    sort | uniq -c | sort -rn |
-    awk '{ count = $1; $1 = ""; sub(/^ /, ""); printf "%5d  %s\n", count, $0 }'
+# The title only names the scrape job, so pull the subject from the body labels.
+lines=$(jq -r 'select(.event == "message")
+    | (.message | [scan("(?m)^- ([a-z_]+) = (.+)$")] | map({(.[0]): .[1]}) | add // {}) as $l
+    | (if $l.obj_name then "\($l.obj_namespace)/\($l.obj_name)"
+       elif $l.pod then "\($l.namespace)/\($l.pod)" + (if $l.container then " (\($l.container))" else "" end)
+       else ($l.namespace // "") end) as $subject
+    | [ (.time | strflocaltime("%m-%d %H:%M")),
+        (.title | capture("^\\[(?<s>[A-Z]+)\\]").s // ""),
+        ($l.alertname // .title),
+        $subject ] | @tsv' <<<"$notifications")
+
+# alert-mode single: one line per alert+subject, so flapping collapses to a count.
+cut -f3,4 <<<"$lines" | sort | uniq -c | sort -rn |
+    awk -F'\t' '{ printf "%s  %s\n", $1, $2 }'
 
 echo
 echo "=== ntfy home-ops, last ${SINCE}, chronological ==="
-jq -r 'select(.event == "message")
-    | [ (.time | strflocaltime("%m-%d %H:%M")), .title ] | @tsv' <<<"$notifications" |
-    column -t -s $'\t'
+column -t -s $'\t' <<<"$lines"

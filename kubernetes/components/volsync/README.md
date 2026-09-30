@@ -5,9 +5,11 @@ VOLSYNC_ACCESSMODES: (default=ReadWriteOnce)
 VOLSYNC_CAPACITY: (default=5Gi)
 VOLSYNC_STORAGECLASS: (default=longhorn-fast)
 
-VOLSYNC_CACHE_ACCESSMODES: (default=5gi)
-VOLSYNC_CACHE_CAPACITY: (default=5gi)
-VOLSYNC_CACHE_STORAGECLASS: (default=openebs-hostpath)
+VOLSYNC_CACHE_ACCESSMODES: (default=ReadWriteOnce)
+VOLSYNC_CACHE_CAPACITY: (default=5Gi) raise the two limits below with it
+VOLSYNC_CACHE_STORAGECLASS: (default=longhorn-ultra-fast)
+VOLSYNC_CACHE_METADATA_MB: (default=2560) kopia metadata cache limit, ~50% of a 5Gi cache
+VOLSYNC_CACHE_CONTENT_MB: (default=768) kopia content cache limit, ~15% of a 5Gi cache
 
 VOLSYNC_PUID: (default=4012)
 VOLSYNC_PGID: (default=4014)

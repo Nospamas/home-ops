@@ -50,7 +50,6 @@ spec:
           - drop
           - tcp
           - flow
-          - port-distribution
           - icmp
           - http
         serviceMonitor:
