@@ -14,13 +14,16 @@ spec:
   extraEnv:
     - name: RENOVATE_ALLOW_PLUGINS
       value: "true"
-    - name: RENOVATE_LOG_LEVEL
-      value: debug
+    # - name: RENOVATE_LOG_LEVEL
+    #   value: debug
     # Persist lookup caches between runs; all globalOnly, so they live here.
     - name: RENOVATE_CACHE_DIR
       value: /cache
     - name: RENOVATE_REPOSITORY_CACHE
       value: enabled
+    # Authed ghcr lookups skip the cache otherwise
+    - name: RENOVATE_CACHE_PRIVATE_PACKAGES
+      value: "true"
     # Only these four default to 30m; the other docker namespaces cache longer.
     - name: RENOVATE_CACHE_TTL_OVERRIDE
       value: >-
@@ -40,7 +43,8 @@ spec:
     - name: cache
       mountPath: /cache
   image: ghcr.io/renovatebot/renovate:44.125.2
-  parallelism: 5
+  # Shared cache PVC; concurrent pruning crashes
+  parallelism: 1
   resources:
     requests:
       cpu: 100m
