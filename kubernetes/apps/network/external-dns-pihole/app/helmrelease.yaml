@@ -37,6 +37,8 @@ spec:
             key: password
     extraArgs:
       - --pihole-server=http://pihole-0.pihole.network.svc.cluster.local
+      # v0.22 changed the default annotation prefix with no fallback; pin the old one
+      - --annotation-prefix=external-dns.alpha.kubernetes.io/
     triggerLoopOnEvent: true
     policy: sync
     sources:

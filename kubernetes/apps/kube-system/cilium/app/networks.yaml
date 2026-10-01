@@ -8,6 +8,8 @@ spec:
   allowFirstLastIPs: "No"
   blocks:
     - cidr: "192.168.0.0/16"
+    # IPv6 ULA mirror of the block above, needed for dual-stack lbipam.cilium.io/ips requests
+    - cidr: "fd00:192:168::/56"
 ---
 # yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliuml2announcementpolicy_v2alpha1.json
 apiVersion: cilium.io/v2alpha1

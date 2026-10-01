@@ -28,12 +28,13 @@ spec:
             key: api-token
     extraArgs:
       - --cloudflare-dns-records-per-page=1000
-      - --cloudflare-proxied
       - --crd-source-apiversion=externaldns.k8s.io/v1alpha1
       - --crd-source-kind=DNSEndpoint
       - --gateway-name=envoy-external
     triggerLoopOnEvent: true
     policy: sync
+    # cloudflare-proxied dropped: gateway-httproute targets are a private LAN IP, which
+    # Cloudflare rejects when proxied. cloudflare-tunnel's DNSEndpoint opts back in per-record.
     sources: ["crd", "gateway-httproute"]
     txtPrefix: k8s.
     txtOwnerId: default

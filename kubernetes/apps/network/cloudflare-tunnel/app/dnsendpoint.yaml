@@ -9,3 +9,6 @@ spec:
     - dnsName: "external.${SECRET_DOMAIN}"
       recordType: CNAME
       targets: ["d6c8bba7-644e-4c93-a8bc-56dc652fa644.cfargotunnel.com"]
+      providerSpecific:
+        - name: cloudflare/proxied
+          value: "true"
