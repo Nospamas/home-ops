@@ -42,7 +42,7 @@ spec:
   extraVolumeMounts:
     - name: cache
       mountPath: /cache
-  image: ghcr.io/renovatebot/renovate:44.125.2
+  image: ghcr.io/renovatebot/renovate:44.149.1
   # Shared cache PVC; concurrent pruning crashes
   parallelism: 1
   resources:
