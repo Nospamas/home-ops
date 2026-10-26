@@ -38,7 +38,7 @@ spec:
           seed-http:
             image: &image
               repository: ghcr.io/home-operations/home-assistant
-              tag: 2026.9.4@sha256:cd5ffc0a3bc873b35f20189ef22ee7ee9e8875fe666928dfee263cd464cc053d
+              tag: 2026.10.4@sha256:0fa107b398ab3fd3c3f7f8e215705579b5e77a30f5cb2e542aa74a7bdd2c4d5b
             command: ["/bin/sh", "/seed/seed-http.sh"]
             securityContext: &securityContext
               allowPrivilegeEscalation: false
@@ -84,7 +84,7 @@ spec:
           code-server:
             image:
               repository: ghcr.io/coder/code-server
-              tag: 4.139.1@sha256:0c067c3cf09ed1830ce282387826be8feefef8a5828f462791c2df3f1007ee17
+              tag: 4.143.1@sha256:377b66bec5645510ed52549bb00e648c273edc604d230a3f90fd2b2433afcb97
             env:
               TZ: ${CLUSTER_TIMEZONE}
             args:
