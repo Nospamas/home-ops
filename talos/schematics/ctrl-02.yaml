@@ -3,6 +3,8 @@ customization:
   extraKernelArgs:
     - amd_pstate=active
     - cpufreq.default_governor=balance_performance
+    # FireCuda NVMe hangs under APST
+    - nvme_core.default_ps_max_latency_us=0
   systemExtensions:
     officialExtensions:
       - siderolabs/amd-ucode
