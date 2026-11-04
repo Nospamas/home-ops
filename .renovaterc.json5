@@ -36,6 +36,12 @@
       allowedVersions: "<1.10.0",
     },
     {
+      description: "Talos 1.13 supports Kubernetes <=1.36; raise with each Talos minor",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["ghcr.io/siderolabs/kubelet"],
+      allowedVersions: "<1.37.0",
+    },
+    {
       description: "Vendored operator manifests are version-pinned as a whole file",
       matchManagers: ["kubernetes", "flux"],
       matchFileNames: [
