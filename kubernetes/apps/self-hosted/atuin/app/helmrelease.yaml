@@ -85,8 +85,9 @@ spec:
           - '{{ .Release.Name }}.${SECRET_DOMAIN}'
           - sh.${SECRET_DOMAIN}
         parentRefs:
-          - name: envoy-internal
+          - name: envoy-external
             namespace: network
+            sectionName: https
         annotations:
           gethomepage.dev/enabled: 'true'
           gethomepage.dev/name: Atuin
