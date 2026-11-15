@@ -28,7 +28,7 @@ spec:
             image:
               repository: mirror.gcr.io/xenrox/ntfy-alertmanager
               # renovate: datasource=docker depName=mirror.gcr.io/xenrox/ntfy-alertmanager
-              tag: 1.0.1@sha256:4dff34a4cb0ab4ba9925c8e21101c6cfc72ccd776223183c64d67b5799f516f7
+              tag: 1.0.2@sha256:475216a9b04c68a24631a0cd7bfcddac3e6468fdd5e4b88c5172379c6fbfd055
             env:
               TZ: ${CLUSTER_TIMEZONE}
             probes:
