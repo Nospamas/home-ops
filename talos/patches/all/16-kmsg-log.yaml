@@ -1,0 +1,6 @@
+---
+# Relay on TrueNAS, see docs/adr/0006
+apiVersion: v1alpha1
+kind: KmsgLogConfig
+name: talos-log-relay
+url: tcp://192.168.0.51:6050/

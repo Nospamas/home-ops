@@ -1,0 +1,85 @@
+---
+# Talos kernel + service logs -> daily archive + VictoriaLogs.
+data_dir: /var/lib/vector
+
+api:
+  enabled: false
+
+sources:
+  talos_kernel:
+    type: socket
+    mode: tcp
+    address: 0.0.0.0:6050
+    host_key: source_ip
+    decoding:
+      codec: json
+  talos_service:
+    type: socket
+    mode: tcp
+    address: 0.0.0.0:6051
+    host_key: source_ip
+    decoding:
+      codec: json
+  internal_metrics:
+    type: internal_metrics
+
+transforms:
+  talos:
+    type: remap
+    inputs:
+      - talos_kernel
+      - talos_service
+    source: |
+      # KmsgLogConfig has no extraTags
+      nodes = {
+        "192.168.0.1": "ctrl-01",
+        "192.168.0.2": "ctrl-02",
+        "192.168.0.3": "ctrl-03",
+        "192.168.0.4": "work-01"
+      }
+      ip = to_string(.source_ip) ?? "unknown"
+      if !exists(.node) {
+        .node = get(nodes, [ip]) ?? ip
+      }
+      .service = if exists(."talos-service") { ."talos-service" } else { "kernel" }
+      del(.source_ip)
+      del(.port)
+
+sinks:
+  archive:
+    type: file
+    inputs:
+      - talos
+    path: /archive/%Y-%m-%d/{{ node }}.log
+    encoding:
+      codec: json
+    framing:
+      method: newline_delimited
+
+  victorialogs:
+    type: http
+    inputs:
+      - talos
+    uri: ${VICTORIALOGS_URL}/insert/jsonline?_stream_fields=node,service&_msg_field=msg&_time_field=talos-time
+    method: post
+    compression: gzip
+    encoding:
+      codec: json
+    framing:
+      method: newline_delimited
+    healthcheck:
+      enabled: false
+    batch:
+      max_events: 1000
+      timeout_secs: 2
+    buffer:
+      type: disk
+      max_size: 1073741824
+      # Never block the archive sink
+      when_full: drop_newest
+
+  metrics:
+    type: prometheus_exporter
+    inputs:
+      - internal_metrics
+    address: 0.0.0.0:9598

@@ -1,0 +1,34 @@
+---
+# TrueNAS Custom App ("Install via YAML"). See README.md.
+services:
+  vector:
+    image: timberio/vector:0.61.0-debian
+    restart: unless-stopped
+    user: "568:568"
+    command: ["--config", "/etc/vector/vector.yaml"]
+    environment:
+      VICTORIALOGS_URL: https://logs.example.com # set to logs.<SECRET_DOMAIN>
+    ports:
+      - "6050:6050" # Talos kernel (KmsgLogConfig)
+      - "6051:6051" # Talos services (machine.logging)
+      - "9598:9598" # Prometheus metrics
+    volumes:
+      - /mnt/Storage/talos-logs/config:/etc/vector:ro
+      - /mnt/Storage/talos-logs/data:/var/lib/vector
+      - /mnt/Storage/talos-logs/archive:/archive
+
+  prune:
+    image: busybox:1.37.0
+    restart: unless-stopped
+    user: "568:568"
+    command:
+      - sh
+      - -c
+      - >-
+        while true;
+        do find /archive -type f -mtime +30 -delete;
+        find /archive -mindepth 1 -type d -empty -delete;
+        sleep 86400;
+        done
+    volumes:
+      - /mnt/Storage/talos-logs/archive:/archive
