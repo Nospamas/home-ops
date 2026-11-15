@@ -1,0 +1,50 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: victoria-logs
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: victoria-logs
+  values:
+    global:
+      image:
+        registry: quay.io
+    dashboards:
+      enabled: true
+      grafanaOperator:
+        enabled: true
+        spec:
+          allowCrossNamespaceImport: true
+          instanceSelector:
+            matchLabels:
+              dashboards: null
+              grafana.internal/instance: grafana
+    server:
+      fullnameOverride: victoria-logs
+      persistentVolume:
+        enabled: true
+        storageClassName: longhorn
+        size: 20Gi
+      retentionPeriod: 30d
+      # Prune before the PVC fills
+      retentionDiskSpaceUsage: 18
+      route:
+        enabled: true
+        annotations:
+          gethomepage.dev/enabled: 'true'
+          gethomepage.dev/group: Observability
+          gethomepage.dev/name: VictoriaLogs
+          gethomepage.dev/icon: victorialogs.svg
+          gethomepage.dev/description: Cluster logs
+          gethomepage.dev/pod-selector: app.kubernetes.io/name=victoria-logs-single
+        hostnames:
+          - logs.${SECRET_DOMAIN}
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+      serviceMonitor:
+        enabled: true

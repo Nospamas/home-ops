@@ -13,6 +13,8 @@ resources:
   - ./ntfy/ks.yaml
   - ./ntfy-alertmanager/ks.yaml
   - ./tower-egress/ks.yaml
+  - ./victoria-logs/ks.yaml
+  - ./smartctl-exporter/ks.yaml
 patches:
   # privileged on namespace for Intel GPU device plugin
   - patch: |-
