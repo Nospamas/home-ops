@@ -11,9 +11,9 @@ spec:
     operation: copy
   ref:
     tag: 0.18.0
-  url: oci://ghcr.io/home-operations/charts-mirror/node-feature-discovery
+  url: oci://registry.k8s.io/nfd/charts/node-feature-discovery
   verify:
     provider: cosign
     matchOIDCIdentity:
-      - issuer: ^https://token.actions.githubusercontent.com$
-        subject: ^https://github.com/home-operations/charts-mirror/.*$
+      - issuer: ^https://accounts\.google\.com$
+        subject: ^krel-trust@k8s-releng-prod\.iam\.gserviceaccount\.com$
