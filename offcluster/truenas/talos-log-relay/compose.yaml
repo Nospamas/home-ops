@@ -18,7 +18,7 @@ services:
       - /mnt/Storage/talos-logs/archive:/archive
 
   prune:
-    image: busybox:1.37.0
+    image: busybox:1.38.0
     restart: unless-stopped
     user: "568:568"
     command:
