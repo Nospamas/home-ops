@@ -22,3 +22,5 @@ talosconfig
 .DS_Store
 Thumbs.db
 .scratch
+# local credentials
+.unifi-router
