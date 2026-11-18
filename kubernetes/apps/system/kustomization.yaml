@@ -5,6 +5,7 @@ kind: Kustomization
 namespace: system
 components:
   - ../../components/common
+  - ../../components/repos/cluster-template
 resources:
   - ./node-feature-discovery/ks.yaml
   - ./reflector/ks.yaml
@@ -15,6 +16,7 @@ resources:
   - ./tuppr/ks.yaml
   - ./renovate/ks.yaml
   - ./descheduler/ks.yaml
+  - ./etcd-defrag/ks.yaml
 patches:
   # privileged on namespace for Intel GPU device plugin
   - patch: |-
