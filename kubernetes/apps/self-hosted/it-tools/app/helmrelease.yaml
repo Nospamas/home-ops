@@ -27,7 +27,7 @@ spec:
           app:
             image:
               repository: ghcr.io/sharevb/it-tools
-              tag: 2026.9.27@sha256:a49111cc027bbd04110beb2a3baf5ebc84e07f1f97589919efba619798215e6c
+              tag: 2026.11.22@sha256:bcbb29086ca71f1ff23c7dc061f8c9b6e50f1267b4dc704327bb29ba55a8b87d
             env:
               TZ: ${CLUSTER_TIMEZONE}
             securityContext:
