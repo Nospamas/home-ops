@@ -38,7 +38,7 @@ spec:
           seed-http:
             image: &image
               repository: ghcr.io/home-operations/home-assistant
-              tag: 2026.10.4@sha256:0fa107b398ab3fd3c3f7f8e215705579b5e77a30f5cb2e542aa74a7bdd2c4d5b
+              tag: 2026.11.3@sha256:96c244d8aa3586026bb8d4fdc0dcf9b34f348874a1ea5060942356cf181177bc
             command: ["/bin/sh", "/seed/seed-http.sh"]
             securityContext: &securityContext
               allowPrivilegeEscalation: false
